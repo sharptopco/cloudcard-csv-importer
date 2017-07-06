@@ -1,5 +1,6 @@
 package com.onlinephotosubmission.csv_importer;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,7 +31,7 @@ public class Main {
 
         for (File csvfile : files) {
             String fileName = removeFileNameExtension(csvfile);
-            List<String> lines = convertTextFileToListOfLines(csvfile.getAbsoluteFile().toString());
+            List<String> lines = convertTextFileToListOfLines(csvfile.getAbsoluteFile().toString(), fileName, args[2]);
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
             saveCardHolders(cardHolders, fileName, args[2]);
             Path inFile = Paths.get(csvfile.getAbsoluteFile().toString());
@@ -39,42 +40,39 @@ public class Main {
         }
     }
 
-    private static void transferDataToCloudCard() {
+    private static String transferDataToCloudCard(CardHolder cardHolder) {
+        //access token: hbg5oh3cte7eeiigo77ri69pnb9viioh
         try {
 
-            URL url = new URL("https://test.cloudcardtools.com/api/login");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URL url = new URL("https://test.cloudcardtools.com/api/people");
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("X-Auth-Token", "hbg5oh3cte7eeiigo77ri69pnb9viioh");//TODO: make const
+            connection.setRequestProperty("Accept", "application/json");
 
-            String input = "{\"username\":\"test@test.com\",\"password\":\"test123\"}";
-
+            String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," +
+                    " \"organization\":{\"id\":38}, " +//TODO: make const
+                    "\"customFields\":{" +
+                    "\"Campus\":\"" + cardHolder.getCampus() + "\"," +
+                    "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " +
+                    "\"identifier\":\"" + cardHolder.getID() + "\" }";
+            System.out.println("Input: " + input);
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(input.getBytes());
             outputStream.flush();
 
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + connection.getResponseCode());
-            }
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-                    (connection.getInputStream())));
-
-            String output;
-            System.out.println("Output from Server .... ");
-            while ((output = bufferedReader.readLine()) != null) {
-                System.out.println(output + "\n");
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+               return "Failed : HTTP error code : " + connection.getResponseCode();
             }
 
             connection.disconnect();
 
         } catch (IOException e) {
-
             e.printStackTrace();
-
         }
+        return "Success";
     }
 
     private static String removeFileNameExtension(File csvfile) {
@@ -115,8 +113,7 @@ public class Main {
                 result = "failed validation";
             } else {
                 //TODO: call the webservice (https://test.cloudcardtools.com/api/login)
-                transferDataToCloudCard();
-                result = "success";
+                result = transferDataToCloudCard(cardHolder);
             }
             content = content + result + ", " + cardHolder + "\n";
         }
@@ -169,7 +166,7 @@ public class Main {
         return cardHolder;
     }
 
-    private static List<String> convertTextFileToListOfLines(String csvPath) throws Exception{
+    private static List<String> convertTextFileToListOfLines(String csvPath, String fileName, String arg) throws Exception{
         List<String> lines = null;
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(csvPath));
@@ -186,6 +183,19 @@ public class Main {
             bufferedReader.close();
         } catch (IOException e) {
             //TODO: Write output file with "Failed to read input file\n + e.message\n e.stackTrace"
+                String reportOutputPath = arg + "/" + fileName(fileName);
+                String failedRead = "Failed to read input file \n" + e.getMessage();
+                File file = new File(reportOutputPath);
+
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                bufferedWriter.write(failedRead);
+                e.printStackTrace();
+
+                bufferedWriter.close();
             throw new Exception(e);
         }
         return lines;
