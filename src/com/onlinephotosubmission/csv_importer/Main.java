@@ -101,12 +101,10 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.write(header);
-        bufferedWriter.write(content);
+    }
 
-        bufferedWriter.close();
+    private static List<CardHolder> dropHeaderFromList(List<CardHolder> cardHolders) {
+        return cardHolders.subList(1, cardHolders.size());
     }
 
     public static void calculateIndexForOutput(String header) {
