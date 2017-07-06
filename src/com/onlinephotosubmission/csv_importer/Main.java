@@ -51,7 +51,7 @@ public class Main {
         }
     }
 
-    private static void saveCardHolders(List<CardHolder> cardHolders, String fileName, String arg) throws Exception{
+    private static void saveCardHolders(List<CardHolder> cardHolders, String fileName, String arg) {
         String content = "";
         String header = "";
         int openingHeaderCounter = 0;
@@ -91,7 +91,7 @@ public class Main {
         }
     }
 
-    private static List<CardHolder> convertLinesIntoCardHolders(List<String> lines) throws Exception {
+    private static List<CardHolder> convertLinesIntoCardHolders(List<String> lines) {
         List<CardHolder> cardHolders = new ArrayList<CardHolder>();
         for (String line : lines) {
             cardHolders.add(convertLineIntoCardholder(line));
