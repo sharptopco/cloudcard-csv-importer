@@ -38,39 +38,38 @@ public class Main {
             Path outputFile = Paths.get(completedFile);
 //            transferFileToCompleted(inFile, outputFile);
         }
-//        transferDataToCloudCard();
     }
 
     private static void transferDataToCloudCard() {
         try {
 
             URL url = new URL("https://test.cloudcardtools.com/api/login");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
 
             String input = "{\"username\":\"test@test.com\",\"password\":\"test123\"}";
 
-            OutputStream os = conn.getOutputStream();
-            os.write(input.getBytes());
-            os.flush();
+            OutputStream outputStream = connection.getOutputStream();
+            outputStream.write(input.getBytes());
+            outputStream.flush();
 
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 throw new RuntimeException("Failed : HTTP error code : "
-                        + conn.getResponseCode());
+                        + connection.getResponseCode());
             }
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    (conn.getInputStream())));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                    (connection.getInputStream())));
 
             String output;
             System.out.println("Output from Server .... ");
-            while ((output = br.readLine()) != null) {
+            while ((output = bufferedReader.readLine()) != null) {
                 System.out.println(output + "\n");
             }
 
-            conn.disconnect();
+            connection.disconnect();
 
         } catch (IOException e) {
 
