@@ -107,4 +107,10 @@ class CardHolder {
         return email + "," + ID + "," + campus + "," + notes;
     }
 
+    public boolean validate() {
+        if (email.isEmpty() || ID.isEmpty() || campus.isEmpty() || notes.isEmpty())
+            return false;
+        else
+            return true;
+    }
 }

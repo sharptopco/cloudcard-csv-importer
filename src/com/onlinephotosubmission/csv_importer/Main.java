@@ -24,13 +24,7 @@ public class Main {
 
         String filePath = args[0];
         String completedFile = args[1];
-        File dir = new File(filePath);
-        File [] files = dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".csv");
-            }
-        });
+        File[] files = getCSVFilesFromDirectory(filePath);
 
         for (File csvfile : files) {
             System.out.println(csvfile);
