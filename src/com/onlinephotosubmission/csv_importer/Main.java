@@ -38,6 +38,20 @@ public class Main {
 
     }
 
+    private static String removeFileNameExtension(File csvfile) {
+        return csvfile.getName().replaceFirst("[.][^.]+$", "");
+    }
+
+    private static File[] getCSVFilesFromDirectory(String filePath) {
+        File dir = new File(filePath);
+        return dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir1, String name) {
+                return name.endsWith(".csv");
+            }
+        });
+    }
+
     private static String fileName(String fileName) {
         LocalDate timeStamp = LocalDate.now();
         return fileName + "-" + timeStamp + "-Report.csv";
