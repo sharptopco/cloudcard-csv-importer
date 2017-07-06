@@ -7,6 +7,9 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -33,9 +36,51 @@ public class Main {
             saveCardHolders(cardHolders, fileName, args[2]);
             Path inFile = Paths.get(csvfile.getAbsoluteFile().toString());
             Path outputFile = Paths.get(completedFile);
-            transferFileToCompleted(inFile, outputFile);
+//            transferFileToCompleted(inFile, outputFile);
         }
+//        transferDataToCloudCard();
+    }
 
+    private static void transferDataToCloudCard() {
+        try {
+
+            URL url = new URL("https://test.cloudcardtools.com/api/login");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            String input = "{\"username\":\"test@test.com\",\"password\":\"test123\"}";
+
+            OutputStream os = conn.getOutputStream();
+            os.write(input.getBytes());
+            os.flush();
+
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + conn.getResponseCode());
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    (conn.getInputStream())));
+
+            String output;
+            System.out.println("Output from Server .... ");
+            while ((output = br.readLine()) != null) {
+                System.out.println(output + "\n");
+            }
+
+            conn.disconnect();
+
+        } catch (MalformedURLException e) {
+
+            e.printStackTrace();
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        }
     }
 
     private static String removeFileNameExtension(File csvfile) {
@@ -70,17 +115,13 @@ public class Main {
         String header = "";
         header = "Status" + ", " + cardHolders.get(0) + "\n";
         for(CardHolder cardHolder : dropHeaderFromList(cardHolders)) {
-//            if(openingHeaderCounter == 0) {
-//                header = "Status," + cardHolder + "\n";
-//                openingHeaderCounter++;
-//            }
-//            else
 
             String result = "output message";
             if (!cardHolder.validate()) {
                 result = "failed validation";
             } else {
                 //TODO: call the webservice (https://test.cloudcardtools.com/api/login)
+                transferDataToCloudCard();
                 result = "success";
             }
             content = content + result + ", " + cardHolder + "\n";
