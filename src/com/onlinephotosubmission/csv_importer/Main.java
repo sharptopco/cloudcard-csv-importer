@@ -85,11 +85,21 @@ public class Main {
             }
             content = content + result + ", " + cardHolder + "\n";
         }
-        String reportOutputPath = arg + "/" + fileName(fileName);
-        File file = new File(reportOutputPath);
+        try {
+            String reportOutputPath = arg + "/" + fileName(fileName);
+            File file = new File(reportOutputPath);
 
-        if (!file.exists()) {
-            file.createNewFile();
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(header);
+            bufferedWriter.write(content);
+
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
