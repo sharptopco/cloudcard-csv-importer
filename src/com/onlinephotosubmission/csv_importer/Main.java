@@ -148,9 +148,11 @@ public class Main {
                 }
                 lines.add(line);
             }
-            lines.add(line);
+            bufferedReader.close();
+        } catch (IOException e) {
+            //TODO: Write output file with "Failed to read input file\n + e.message\n e.stackTrace"
+            throw new Exception(e);
         }
-        bufferedReader.close();
         return lines;
     }
 }
