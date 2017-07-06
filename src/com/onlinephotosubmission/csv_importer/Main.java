@@ -83,8 +83,7 @@ public class Main {
                 //TODO: call the webservice (https://test.cloudcardtools.com/api/login)
                 result = "success";
             }
-            else
-                content = content + "failure notice, " + cardHolder + "\n";
+            content = content + result + ", " + cardHolder + "\n";
         }
         String reportOutputPath = arg + "/" + fileName(fileName);
         File file = new File(reportOutputPath);
