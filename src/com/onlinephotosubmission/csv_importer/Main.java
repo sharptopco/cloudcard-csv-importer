@@ -72,10 +72,6 @@ public class Main {
 
             conn.disconnect();
 
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-
         } catch (IOException e) {
 
             e.printStackTrace();
