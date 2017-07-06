@@ -104,15 +104,19 @@ public class Main {
         return cardHolder;
     }
 
-    private static List<String> convertTextFileToListOfLines(String csvPath) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(csvPath));
-        List<String> lines = new ArrayList<String>();
-        String line = null;
-        int initialHeaderRead = 0;
-        while((line = bufferedReader.readLine()) != null) {
-            if(initialHeaderRead == 0) {
-                calculateIndexForOutput(line);
-                initialHeaderRead++;
+    private static List<String> convertTextFileToListOfLines(String csvPath) throws Exception{
+        List<String> lines = null;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(csvPath));
+            lines = new ArrayList<String>();
+            String line = null;
+            int initialHeaderRead = 0;
+            while((line = bufferedReader.readLine()) != null) {
+                if(initialHeaderRead == 0) {
+                    calculateIndexForOutput(line);
+                    initialHeaderRead++;
+                }
+                lines.add(line);
             }
             lines.add(line);
         }
