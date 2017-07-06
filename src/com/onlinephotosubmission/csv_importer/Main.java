@@ -68,11 +68,20 @@ public class Main {
     private static void saveCardHolders(List<CardHolder> cardHolders, String fileName, String arg) {
         String content = "";
         String header = "";
-        int openingHeaderCounter = 0;
-        for(CardHolder cardHolder : cardHolders) {
-            if(openingHeaderCounter == 0) {
-                header = "Status," + cardHolder + "\n";
-                openingHeaderCounter++;
+        header = "Status" + ", " + cardHolders.get(0) + "\n";
+        for(CardHolder cardHolder : dropHeaderFromList(cardHolders)) {
+//            if(openingHeaderCounter == 0) {
+//                header = "Status," + cardHolder + "\n";
+//                openingHeaderCounter++;
+//            }
+//            else
+
+            String result = "output message";
+            if (!cardHolder.validate()) {
+                result = "failed validation";
+            } else {
+                //TODO: call the webservice (https://test.cloudcardtools.com/api/login)
+                result = "success";
             }
             else
                 content = content + "failure notice, " + cardHolder + "\n";
