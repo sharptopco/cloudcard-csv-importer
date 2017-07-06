@@ -27,10 +27,7 @@ public class Main {
         File[] files = getCSVFilesFromDirectory(filePath);
 
         for (File csvfile : files) {
-            System.out.println(csvfile);
-        }
-        for (File csvfile : files) {
-            String fileName = csvfile.getName().replaceFirst("[.][^.]+$", "");
+            String fileName = removeFileNameExtension(csvfile);
             List<String> lines = convertTextFileToListOfLines(csvfile.getAbsoluteFile().toString());
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
             saveCardHolders(cardHolders, fileName, args[2]);
