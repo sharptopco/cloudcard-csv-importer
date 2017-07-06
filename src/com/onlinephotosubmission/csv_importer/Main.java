@@ -1,4 +1,4 @@
-package com.project.java;
+package com.onlinephotosubmission.csv_importer;
 
 import java.io.*;
 import java.nio.file.Files;
