@@ -43,7 +43,6 @@ public class Main {
     }
 
     private static String transferToCloudCard(CardHolder cardHolder) {
-        //access token: hbg5oh3cte7eeiigo77ri69pnb9viioh
         try {
 
             URL url = new URL("https://test.cloudcardtools.com/api/people");
@@ -55,7 +54,7 @@ public class Main {
             connection.setRequestProperty("Accept", "application/json");
 
             String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," +
-                    ORGANIZATION_ID +//TODO: make const
+                    ORGANIZATION_ID +
                     "\"customFields\":{" +
                     "\"Campus\":\"" + cardHolder.getCampus() + "\"," +
                     "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " +
@@ -114,7 +113,6 @@ public class Main {
             if (!cardHolder.validate()) {
                 result = "failed validation";
             } else {
-                //TODO: call the webservice (https://test.cloudcardtools.com/api/login)
                 result = transferToCloudCard(cardHolder);
             }
             content = content + result + ", " + cardHolder + "\n";
@@ -184,7 +182,6 @@ public class Main {
             }
             bufferedReader.close();
         } catch (IOException e) {
-            //TODO: Write output file with "Failed to read input file\n + e.message\n e.stackTrace"
                 String reportOutputPath = arg + "/" + fileName(fileName);
                 String failedRead = "Failed to read input file \n" + e.getMessage();
                 File file = new File(reportOutputPath);
