@@ -22,6 +22,8 @@ public class Main {
             "Notes"
     };
     private static String delimiter = ",";
+    private static final String ACCESS_TOKEN = "hbg5oh3cte7eeiigo77ri69pnb9viioh";
+    private static final String ORGANIZATION_ID = "\"organization\":{\"id\":38},";
 
     public static void main(String[] args) throws Exception {
 
@@ -40,7 +42,7 @@ public class Main {
         }
     }
 
-    private static String transferDataToCloudCard(CardHolder cardHolder) {
+    private static String transferToCloudCard(CardHolder cardHolder) {
         //access token: hbg5oh3cte7eeiigo77ri69pnb9viioh
         try {
 
@@ -49,11 +51,11 @@ public class Main {
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("X-Auth-Token", "hbg5oh3cte7eeiigo77ri69pnb9viioh");//TODO: make const
+            connection.setRequestProperty("X-Auth-Token", ACCESS_TOKEN);
             connection.setRequestProperty("Accept", "application/json");
 
             String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," +
-                    " \"organization\":{\"id\":38}, " +//TODO: make const
+                    ORGANIZATION_ID +//TODO: make const
                     "\"customFields\":{" +
                     "\"Campus\":\"" + cardHolder.getCampus() + "\"," +
                     "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " +
@@ -113,7 +115,7 @@ public class Main {
                 result = "failed validation";
             } else {
                 //TODO: call the webservice (https://test.cloudcardtools.com/api/login)
-                result = transferDataToCloudCard(cardHolder);
+                result = transferToCloudCard(cardHolder);
             }
             content = content + result + ", " + cardHolder + "\n";
         }
