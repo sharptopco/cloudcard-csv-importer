@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -30,6 +31,9 @@ public class Main {
         String filePath = args[0];
         String completedFile = args[1];
         File[] files = getCSVFilesFromDirectory(filePath);
+        Properties properties = new Properties();
+        OutputStream propertyOutput = new FileOutputStream(filePath + "/config.properties");
+        configurePropertiesFile(properties, args);
 
         for (File csvfile : files) {
             String fileName = removeFileNameExtension(csvfile);
@@ -40,6 +44,13 @@ public class Main {
             Path outputFile = Paths.get(completedFile);
 //            transferFileToCompleted(inFile, outputFile);
         }
+        properties.store(propertyOutput,null);
+    }
+
+    private static void configurePropertiesFile(Properties properties, String[] args) {
+        properties.setProperty("Input File", args[0]);
+        properties.setProperty("Completed File", args[1]);
+        properties.setProperty("Report File", args[2]);
     }
 
     private static String transferToCloudCard(CardHolder cardHolder) {

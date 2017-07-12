@@ -9,7 +9,6 @@ class CardHolder {
     private static int idIndex;
     private static int campusIndex;
     private static int notesIndex;
-    private String status;
     private String email;
     private String ID;
     private String campus;
@@ -65,14 +64,9 @@ class CardHolder {
         ID = cardHolderData[idIndex];
         campus = cardHolderData[campusIndex];
         notes = cardHolderData[notesIndex];
-
     }
 
     public void setDelimiter(String delimiter) {this.delimiter = delimiter;}
-
-    String getStatus() { return status; }
-
-    void setStatus(String status) { this.status = status; }
 
     String getEmail() { return email; }
 
@@ -80,7 +74,7 @@ class CardHolder {
         email = inputEmail;
     }
 
-    String getID() {
+    public String getID() {
         return ID;
     }
 
@@ -88,13 +82,13 @@ class CardHolder {
         ID = inputID;
     }
 
-    String getCampus() { return campus; }
+    public String getCampus() { return campus; }
 
     void setCampus(String inputCampus) {
         campus = inputCampus;
     }
 
-    String getNotes() {
+    public String getNotes() {
         return notes;
     }
 
