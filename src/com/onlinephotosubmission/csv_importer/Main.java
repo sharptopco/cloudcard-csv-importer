@@ -5,14 +5,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
-
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class Main {
 
@@ -23,54 +22,58 @@ public class Main {
             "Notes"
     };
     private static String delimiter = ",";
-    private static final String ACCESS_TOKEN = "hbg5oh3cte7eeiigo77ri69pnb9viioh";
-    private static final String ORGANIZATION_ID = "\"organization\":{\"id\":38},";
 
     public static void main(String[] args) throws Exception {
-
-        String filePath = args[0];
-        String completedFile = args[1];
-        File[] files = getCSVFilesFromDirectory(filePath);
+        String[] fileLocations = new String[3];
         Properties properties = new Properties();
-        OutputStream propertyOutput = new FileOutputStream(filePath + "/config.properties");
-        configurePropertiesFile(properties, args);
+        readPropertyFileIntoLocalArguments(args, fileLocations, properties);
+        File[] files = getCSVFilesFromDirectory(fileLocations[0]);
 
         for (File csvfile : files) {
             String fileName = removeFileNameExtension(csvfile);
-            List<String> lines = convertTextFileToListOfLines(csvfile.getAbsoluteFile().toString(), fileName, args[2]);
+            List<String> lines = convertTextFileToListOfLines(csvfile.getAbsoluteFile().toString(), fileName, fileLocations[2]);
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
-            saveCardHolders(cardHolders, fileName, args[2]);
-            Path inFile = Paths.get(csvfile.getAbsoluteFile().toString());
-            Path outputFile = Paths.get(completedFile);
-//            transferFileToCompleted(inFile, outputFile);
+            saveCardHolders(cardHolders, fileName, fileLocations[2], properties);
+            Path inputFile = Paths.get(csvfile.getAbsoluteFile().toString());
+            Path completedFile = Paths.get(fileLocations[1]);
+            transferFileToCompleted(inputFile, completedFile);
         }
-        properties.store(propertyOutput,null);
     }
 
-    private static void configurePropertiesFile(Properties properties, String[] args) {
-        properties.setProperty("Input File", args[0]);
-        properties.setProperty("Completed File", args[1]);
-        properties.setProperty("Report File", args[2]);
+    private static void readPropertyFileIntoLocalArguments(String[] args, String[] fileLocations, Properties properties) throws IOException {
+        properties.load(new FileInputStream("config.properties"));
+        if (args.length == 0) {
+            savePropertyFileToArguments(properties, fileLocations);
+        } else {
+            fileLocations[0] = args[0];
+            fileLocations[1] = args[1];
+            fileLocations[2] = args[2];
+        }
     }
 
-    private static String transferToCloudCard(CardHolder cardHolder) {
+    private static void savePropertyFileToArguments(Properties properties, String[] fileLocations) throws IOException {
+        fileLocations[0] = properties.getProperty("InputFile");
+        fileLocations[1] = properties.getProperty("CompletedFile");
+        fileLocations[2] = properties.getProperty("ReportFile");
+    }
+
+    private static String transferToCloudCard(CardHolder cardHolder, Properties properties) {
         try {
 
-            URL url = new URL("https://test.cloudcardtools.com/api/people");
+            URL url = new URL(properties.getProperty("URL"));
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("X-Auth-Token", ACCESS_TOKEN);
+            connection.setRequestProperty("X-Auth-Token", properties.getProperty("AccessToken"));
             connection.setRequestProperty("Accept", "application/json");
 
             String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," +
-                    ORGANIZATION_ID +
+                    "\"organization\":{\"id\":" + properties.getProperty("ID") + "}," +
                     "\"customFields\":{" +
                     "\"Campus\":\"" + cardHolder.getCampus() + "\"," +
                     "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " +
                     "\"identifier\":\"" + cardHolder.getID() + "\" }";
-            System.out.println("Input: " + input);
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(input.getBytes());
             outputStream.flush();
@@ -101,35 +104,36 @@ public class Main {
         });
     }
 
-    private static String fileName(String fileName) {
-        LocalDate timeStamp = LocalDate.now();
-        return fileName + "-" + timeStamp + "-Report.csv";
+    private static String getFileNameWithTimeStamp(String fileName) {
+        LocalDateTime timeStamp = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH" + "\u02f8" + "mm" + "\u02f8" + "ss");
+        String formatDateTime = timeStamp.format(formatter);
+        return fileName + "-" + formatDateTime + "-Report.csv";
     }
 
-    private static void transferFileToCompleted(Path inputFile, Path outputFile) {
+    private static void transferFileToCompleted(Path inputFile, Path completedFile) {
         try {
-            Files.move(inputFile, outputFile.resolve(inputFile.getFileName()), REPLACE_EXISTING);
+            Files.move(inputFile, completedFile.resolve(inputFile.getFileName()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void saveCardHolders(List<CardHolder> cardHolders, String fileName, String arg) {
+    private static void saveCardHolders(List<CardHolder> cardHolders, String fileName, String fileLocation, Properties properties) {
         String content = "";
-        String header = "";
-        header = "Status" + ", " + cardHolders.get(0) + "\n";
+        String header = "Status" + ", " + cardHolders.get(0) + "\n";
         for(CardHolder cardHolder : dropHeaderFromList(cardHolders)) {
 
-            String result = "output message";
+            String result;
             if (!cardHolder.validate()) {
                 result = "failed validation";
             } else {
-                result = transferToCloudCard(cardHolder);
+                result = transferToCloudCard(cardHolder, properties);
             }
             content = content + result + ", " + cardHolder + "\n";
         }
         try {
-            String reportOutputPath = arg + "/" + fileName(fileName);
+            String reportOutputPath = fileLocation + "/" + getFileNameWithTimeStamp(fileName);
             File file = new File(reportOutputPath);
 
             if (!file.exists()) {
@@ -182,7 +186,7 @@ public class Main {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(csvPath));
             lines = new ArrayList<String>();
-            String line = null;
+            String line;
             int initialHeaderRead = 0;
             while((line = bufferedReader.readLine()) != null) {
                 if(initialHeaderRead == 0) {
@@ -193,7 +197,7 @@ public class Main {
             }
             bufferedReader.close();
         } catch (IOException e) {
-                String reportOutputPath = arg + "/" + fileName(fileName);
+                String reportOutputPath = arg + "/" + getFileNameWithTimeStamp(fileName);
                 String failedRead = "Failed to read input file \n" + e.getMessage();
                 File file = new File(reportOutputPath);
 
