@@ -31,18 +31,6 @@ public class Main {
         }
     }
 
-    private static String[] readPropertyFileIntoLocalVariables(String[] args, String[] fileLocations, Properties properties) throws IOException {
-
-        if (args.length == 0) {
-//            savePropertyFileToArguments(properties, fileLocations);
-        } else {
-            fileLocations[ 0 ] = args[ 0 ];
-            fileLocations[ 1 ] = args[ 1 ];
-            fileLocations[ 2 ] = args[ 2 ];
-        }
-        return fileLocations;
-    }
-
     private static String transferToCloudCard(CardHolder cardHolder, Properties properties) {
 
         try {
@@ -98,9 +86,8 @@ public class Main {
     }
 
     private static void transferFileToCompleted(File inputFile, String completedFile) {
-
         try {
-            Files.move(Paths.get(inputFile.getAbsoluteFile().toString()), Paths.get(completedFile));
+            Files.move(Paths.get(inputFile.getAbsoluteFile().toString()), Paths.get(completedFile, inputFile.getName()));
         } catch (IOException e) {
             e.printStackTrace();
         }
