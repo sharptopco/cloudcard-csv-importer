@@ -14,20 +14,20 @@ import java.util.Properties;
 
 public class Main {
 
-    public static String[] headerTypes = {"Email", "ID", "Campus", "Notes"};
+    public static String[] headerTypes = {"Email", "Organization_ID", "Campus", "Notes"};
     private static String delimiter = ",";
 
     public static void main(String[] args) throws Exception {
         Properties properties = new Properties();
         properties.load(new FileInputStream("config.properties"));
-        File[] inputFiles = getCSVFilesFromDirectory(properties.getProperty("InputFile"));
+        File[] inputFiles = getCSVFilesFromDirectory(properties.getProperty("Input_dir"));
 
         for (File inputFile : inputFiles) {
             String fileName = removeFileNameExtension(inputFile);
-            List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties.getProperty("ReportFile"));
+            List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties.getProperty("Report_dir"));
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
-            saveCardHolders(cardHolders, fileName, properties.getProperty("ReportFile"), properties);
-            transferFileToCompleted(inputFile, properties.getProperty("CompletedFile"));
+            saveCardHolders(cardHolders, fileName, properties.getProperty("Report_dir"), properties);
+            transferFileToCompleted(inputFile, properties.getProperty("Completed_dir"));
         }
     }
 
@@ -43,7 +43,7 @@ public class Main {
             connection.setRequestProperty("X-Auth-Token", properties.getProperty("AccessToken"));
             connection.setRequestProperty("Accept", "application/json");
 
-            String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," + "\"organization\":{\"id\":" + properties.getProperty("ID") + "}," + "\"customFields\":{" + "\"Campus\":\"" + cardHolder.getCampus() + "\"," + "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " + "\"identifier\":\"" + cardHolder.getID() + "\" }";
+            String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," + "\"organization\":{\"id\":" + properties.getProperty("Organization_ID") + "}," + "\"customFields\":{" + "\"Campus\":\"" + cardHolder.getCampus() + "\"," + "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " + "\"identifier\":\"" + cardHolder.getID() + "\" }";
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(input.getBytes());
             outputStream.flush();
