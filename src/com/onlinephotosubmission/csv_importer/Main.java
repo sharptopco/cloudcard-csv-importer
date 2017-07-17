@@ -5,7 +5,6 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,40 +18,29 @@ public class Main {
     private static String delimiter = ",";
 
     public static void main(String[] args) throws Exception {
-
-        String[] fileLocations = new String[ 3 ];
         Properties properties = new Properties();
-        readPropertyFileIntoLocalArguments(args, fileLocations, properties);
-        File[] files = getCSVFilesFromDirectory(fileLocations[ 0 ]);
+        properties.load(new FileInputStream("config.properties"));
+        File[] inputFiles = getCSVFilesFromDirectory(properties.getProperty("InputFile"));
 
-        for (File csvfile : files) {
-            String fileName = removeFileNameExtension(csvfile);
-            List<String> lines = convertTextFileToListOfLines(csvfile.getAbsoluteFile().toString(), fileName, fileLocations[ 2 ]);
+        for (File inputFile : inputFiles) {
+            String fileName = removeFileNameExtension(inputFile);
+            List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties.getProperty("ReportFile"));
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
-            saveCardHolders(cardHolders, fileName, fileLocations[ 2 ], properties);
-            Path inputFile = Paths.get(csvfile.getAbsoluteFile().toString());
-            Path completedFile = Paths.get(fileLocations[ 1 ]);
-            transferFileToCompleted(inputFile, completedFile);
+            saveCardHolders(cardHolders, fileName, properties.getProperty("ReportFile"), properties);
+            transferFileToCompleted(inputFile, properties.getProperty("CompletedFile"));
         }
     }
 
-    private static void readPropertyFileIntoLocalArguments(String[] args, String[] fileLocations, Properties properties) throws IOException {
+    private static String[] readPropertyFileIntoLocalVariables(String[] args, String[] fileLocations, Properties properties) throws IOException {
 
-        properties.load(new FileInputStream("config.properties"));
         if (args.length == 0) {
-            savePropertyFileToArguments(properties, fileLocations);
+//            savePropertyFileToArguments(properties, fileLocations);
         } else {
             fileLocations[ 0 ] = args[ 0 ];
             fileLocations[ 1 ] = args[ 1 ];
             fileLocations[ 2 ] = args[ 2 ];
         }
-    }
-
-    private static void savePropertyFileToArguments(Properties properties, String[] fileLocations) throws IOException {
-
-        fileLocations[ 0 ] = properties.getProperty("InputFile");
-        fileLocations[ 1 ] = properties.getProperty("CompletedFile");
-        fileLocations[ 2 ] = properties.getProperty("ReportFile");
+        return fileLocations;
     }
 
     private static String transferToCloudCard(CardHolder cardHolder, Properties properties) {
@@ -109,10 +97,10 @@ public class Main {
         return fileName + "-" + formatDateTime + "-Report.csv";
     }
 
-    private static void transferFileToCompleted(Path inputFile, Path completedFile) {
+    private static void transferFileToCompleted(File inputFile, String completedFile) {
 
         try {
-            Files.move(inputFile, completedFile.resolve(inputFile.getFileName()));
+            Files.move(Paths.get(inputFile.getAbsoluteFile().toString()), Paths.get(completedFile));
         } catch (IOException e) {
             e.printStackTrace();
         }
