@@ -27,15 +27,20 @@ public class Main {
             List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties.getProperty("Report_dir"));
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
             saveCardHolders(cardHolders, fileName, properties.getProperty("Report_dir"), properties);
-            transferFileToCompleted(inputFile, properties.getProperty("Completed_dir"));
+            transferFileToCompletedDirectory(inputFile, properties.getProperty("Completed_dir"));
+            sendCompletedEmail();
         }
+    }
+
+    private static void sendCompletedEmail() {
+
     }
 
     private static String transferToCloudCard(CardHolder cardHolder, Properties properties) {
 
         try {
 
-            URL url = new URL(properties.getProperty("URL") + "/api/people");
+            URL url = new URL(properties.getProperty("Website_URL"));
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
@@ -85,7 +90,7 @@ public class Main {
         return fileName + "-" + formatDateTime + "-Report.csv";
     }
 
-    private static void transferFileToCompleted(File inputFile, String completedFile) {
+    private static void transferFileToCompletedDirectory(File inputFile, String completedFile) {
         try {
             Files.move(Paths.get(inputFile.getAbsoluteFile().toString()), Paths.get(completedFile, inputFile.getName()));
         } catch (IOException e) {
