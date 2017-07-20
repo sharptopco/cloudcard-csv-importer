@@ -5,6 +5,8 @@ package com.onlinephotosubmission.csv_importer;
  */
 class CardHolder {
 
+    public static final String[] headerTypes = {"Email", "ORG_ID", "Campus", "Notes"};
+
     private static int emailIndex;
     private static int idIndex;
     private static int campusIndex;
@@ -30,6 +32,7 @@ class CardHolder {
     }
 
     public static void setEmailIndex(int emailIndex) {
+
         CardHolder.emailIndex = emailIndex;
     }
 
@@ -55,15 +58,6 @@ class CardHolder {
 
     public static void setNotesIndex(int notesIndex) {
         CardHolder.notesIndex = notesIndex;
-    }
-
-    public void parseInputString() {
-        String[] cardHolderData = inputString.split(delimiter);
-
-        email = cardHolderData[emailIndex];
-        ID = cardHolderData[idIndex];
-        campus = cardHolderData[campusIndex];
-        notes = cardHolderData[notesIndex];
     }
 
     public void setDelimiter(String delimiter) {this.delimiter = delimiter;}
@@ -94,6 +88,15 @@ class CardHolder {
 
     void setNotes(String inputNotes) {
         notes = inputNotes;
+    }
+
+    public void parseInputString() {
+        String[] cardHolderData = inputString.split(delimiter);
+
+        email = cardHolderData[emailIndex];
+        ID = cardHolderData[idIndex];
+        campus = cardHolderData[campusIndex];
+        notes = cardHolderData[notesIndex];
     }
 
     @Override

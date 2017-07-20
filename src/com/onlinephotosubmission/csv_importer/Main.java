@@ -21,7 +21,6 @@ public class Main {
     public static final String ACCESS_TOKEN = "access.token";
     public static final String ORG_ID = "organization.id";
     public static final String BASE_URL = "base.url";
-    public static String[] headerTypes = {"Email", "ORG_ID", "Campus", "Notes"};
     private static String delimiter = ",";
 
     public static void main(String[] args) throws Exception {
@@ -148,8 +147,8 @@ public class Main {
 
         String[] Header = header.split(delimiter);
         for (int i = 0; i < Header.length; i++) {
-            for (int j = 0; j < headerTypes.length; j++) {
-                if (headerTypes[ j ].equals(Header[ i ])) {
+            for (int j = 0; j < CardHolder.headerTypes.length; j++) {
+                if (CardHolder.headerTypes[ j ].equals(Header[ i ])) {
                     if (i == 0) { CardHolder.setEmailIndex(j); }
                     if (i == 1) { CardHolder.setIdIndex(j); }
                     if (i == 2) { CardHolder.setCampusIndex(j); }
