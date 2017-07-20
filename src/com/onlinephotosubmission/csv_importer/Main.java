@@ -19,7 +19,7 @@ public class Main {
     public static final String REPORT_DIR = "report.directory";
     public static final String COMPLETED_DIR = "completed.directory";
     public static final String ACCESS_TOKEN = "access.token";
-    public static final String ORG_ID = "organization.id";
+    public static final String ORG_ID_KEY = "organization.id";
     public static final String BASE_URL = "base.url";
     public static String delimiter = ",";
 
@@ -31,6 +31,8 @@ public class Main {
         } else {
             properties.load(new FileInputStream(CONFIG_PROPERTIES));
         }
+
+        CardHolder.setOrganizationId(Integer.valueOf(properties.getProperty(ORG_ID_KEY)));
 
         for (File inputFile : loadInputFiles(properties)) {
             List<String> lines = convertTextFileToListOfLines(inputFile, properties);
@@ -50,9 +52,8 @@ public class Main {
             connection.setRequestMethod("POST");
             setConnectionHeaders(connection, properties);
 
-            String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," + "\"organization\":{\"id\":" + properties.getProperty(ORG_ID) + "}," + "\"customFields\":{" + "\"Campus\":\"" + cardHolder.getCampus() + "\"," + "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " + "\"identifier\":\"" + cardHolder.getID() + "\" }";
             OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(input.getBytes());
+            outputStream.write(cardHolder.toJSON().getBytes());
             outputStream.flush();
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {

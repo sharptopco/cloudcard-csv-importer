@@ -5,14 +5,16 @@ package com.onlinephotosubmission.csv_importer;
  */
 class CardHolder {
 
-    public static final String[] headerTypes = {"Email", "ID", "Campus", "Notes"};
+    public static final String[] headerTypes = {"Email", "id", "Campus", "Notes"};
+
+    private static Integer organizationId;
 
     private static int emailIndex;
     private static int idIndex;
     private static int campusIndex;
     private static int notesIndex;
     private String email;
-    private String ID;
+    private String id;
     private String campus;
     private String notes;
     private String inputString;
@@ -84,14 +86,14 @@ class CardHolder {
         email = inputEmail;
     }
 
-    public String getID() {
+    public String getId() {
 
-        return ID;
+        return id;
     }
 
-    void setID(String inputID) {
+    void setId(String inputID) {
 
-        ID = inputID;
+        id = inputID;
     }
 
     public String getCampus() {
@@ -112,6 +114,20 @@ class CardHolder {
     void setNotes(String inputNotes) {
 
         notes = inputNotes;
+    }
+
+    public static int getOrganizationId() {
+
+        return organizationId;
+    }
+
+    public static void setOrganizationId(int organizationId) throws IllegalAccessException {
+
+        if (CardHolder.organizationId != null) {
+            throw new IllegalAccessException("Organization id can only be set once and never modified.");
+        }
+
+        CardHolder.organizationId = organizationId;
     }
 
     public static void setHeaderIndexes(String header) {
@@ -144,20 +160,26 @@ class CardHolder {
         String[] cardHolderData = inputString.split(delimiter);
 
         email = cardHolderData[ emailIndex ];
-        ID = cardHolderData[ idIndex ];
+        id = cardHolderData[ idIndex ];
         campus = cardHolderData[ campusIndex ];
         notes = cardHolderData[ notesIndex ];
+    }
+
+    public String toJSON() {
+
+        String customFieldsAsJSON = "{" + "\"Campus\":\"" + campus + "\"," + "\"Notes\":\"" + notes + "\"}";
+        return "{ \"email\":\"" + email + "\"," + "\"organization\":{\"id\":" + organizationId + "}," + "\"customFields\":" + customFieldsAsJSON + ", " + "\"identifier\":\"" + id + "\" }";
     }
 
     @Override
     public String toString() {
 
-        return email + "," + ID + "," + campus + "," + notes;
+        return email + "," + id + "," + campus + "," + notes;
     }
 
     public boolean validate() {
 
-        if (email.isEmpty() || ID.isEmpty() || campus.isEmpty() || notes.isEmpty()) return false;
+        if (email.isEmpty() || id.isEmpty() || campus.isEmpty() || notes.isEmpty()) return false;
         else return true;
     }
 }
