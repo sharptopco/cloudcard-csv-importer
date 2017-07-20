@@ -14,11 +14,10 @@ import java.util.Properties;
 
 public class Main {
 
-    public static final boolean DEBUG = true;
     public static final String CONFIG_PROPERTIES = "config.properties";
-    public static final String INPUT_FILE = "input.file";
-    public static final String REPORT_FILE = "report.file";
-    public static final String COMPLETED_FILE = "completed.file";
+    public static final String INPUT_DIR = "input.directory";
+    public static final String REPORT_DIR = "report.directory";
+    public static final String COMPLETED_DIR = "completed.directory";
     public static final String ACCESS_TOKEN = "access.token";
     public static final String ORG_ID = "organization.id";
     public static final String BASE_URL = "base.url";
@@ -29,30 +28,17 @@ public class Main {
 
         Properties properties = new Properties();
         properties.load(new FileInputStream(CONFIG_PROPERTIES));
-        File[] inputFiles = getCSVFilesFromDirectory(properties.getProperty(INPUT_FILE));
 
-        for (File inputFile : inputFiles) {
+        for (File inputFile : loadInputFiles(properties)) {
             String fileName = removeFileNameExtension(inputFile);
-            List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties.getProperty(REPORT_FILE));
+            List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties);
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
-            saveCardHolders(cardHolders, fileName, properties.getProperty(REPORT_FILE), properties);
-            transferFileToCompleted(inputFile, properties.getProperty(COMPLETED_FILE));
+            saveCardHolders(cardHolders, fileName, properties);
+            moveFileToCompleted(inputFile, properties);
         }
     }
 
-    private static String[] readPropertyFileIntoLocalVariables(String[] args, String[] fileLocations, Properties properties) throws IOException {
-
-        if (args.length == 0) {
-            //            savePropertyFileToArguments(properties, fileLocations);
-        } else {
-            fileLocations[ 0 ] = args[ 0 ];
-            fileLocations[ 1 ] = args[ 1 ];
-            fileLocations[ 2 ] = args[ 2 ];
-        }
-        return fileLocations;
-    }
-
-    private static String transferToCloudCard(CardHolder cardHolder, Properties properties) {
+    private static String importToCloudCard(CardHolder cardHolder, Properties properties) {
 
         try {
 
@@ -60,9 +46,7 @@ public class Main {
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("X-Auth-Token", properties.getProperty(ACCESS_TOKEN));
-            connection.setRequestProperty("Accept", "application/json");
+            setConnectionHeaders(connection, properties);
 
             String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," + "\"organization\":{\"id\":" + properties.getProperty(ORG_ID) + "}," + "\"customFields\":{" + "\"Campus\":\"" + cardHolder.getCampus() + "\"," + "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " + "\"identifier\":\"" + cardHolder.getID() + "\" }";
             OutputStream outputStream = connection.getOutputStream();
@@ -81,14 +65,21 @@ public class Main {
         return "Success";
     }
 
+    private static void setConnectionHeaders(HttpsURLConnection connection, Properties properties) {
+
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("X-Auth-Token", properties.getProperty(ACCESS_TOKEN));
+        connection.setRequestProperty("Accept", "application/json");
+    }
+
     private static String removeFileNameExtension(File csvfile) {
 
         return csvfile.getName().replaceFirst("[.][^.]+$", "");
     }
 
-    private static File[] getCSVFilesFromDirectory(String filePath) {
+    private static File[] loadInputFiles(Properties properties) {
 
-        File dir = new File(filePath);
+        File dir = new File(properties.getProperty(INPUT_DIR));
         return dir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir1, String name) {
@@ -98,7 +89,7 @@ public class Main {
         });
     }
 
-    private static String getFileNameWithTimeStamp(String fileName) {
+    private static String createReportFileName(String fileName) {
 
         LocalDateTime timeStamp = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH" + "\u02f8" + "mm" + "\u02f8" + "ss");
@@ -106,8 +97,9 @@ public class Main {
         return fileName + "-" + formatDateTime + "-Report.csv";
     }
 
-    private static void transferFileToCompleted(File inputFile, String completedFile) {
+    private static void moveFileToCompleted(File inputFile, Properties properties) {
 
+        String completedFile = properties.getProperty(COMPLETED_DIR);
         try {
             Files.move(Paths.get(inputFile.getAbsoluteFile().toString()), Paths.get(completedFile + "/" + inputFile.getName()));
         } catch (IOException e) {
@@ -116,7 +108,7 @@ public class Main {
         }
     }
 
-    private static void saveCardHolders(List<CardHolder> cardHolders, String fileName, String fileLocation, Properties properties) {
+    private static void saveCardHolders(List<CardHolder> cardHolders, String fileName, Properties properties) {
 
         String content = "";
         String header = "Status" + ", " + cardHolders.get(0) + "\n";
@@ -126,12 +118,12 @@ public class Main {
             if (!cardHolder.validate()) {
                 result = "failed validation";
             } else {
-                result = transferToCloudCard(cardHolder, properties);
+                result = importToCloudCard(cardHolder, properties);
             }
             content = content + result + ", " + cardHolder + "\n";
         }
         try {
-            String reportOutputPath = fileLocation + "/" + getFileNameWithTimeStamp(fileName);
+            String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(fileName);
             File file = new File(reportOutputPath);
 
             if (!file.exists()) {
@@ -183,7 +175,7 @@ public class Main {
         return cardHolder;
     }
 
-    private static List<String> convertTextFileToListOfLines(String csvPath, String fileName, String arg) throws Exception {
+    private static List<String> convertTextFileToListOfLines(String csvPath, String fileName, Properties properties) throws Exception {
 
         List<String> lines = null;
         try {
@@ -200,7 +192,7 @@ public class Main {
             }
             bufferedReader.close();
         } catch (IOException e) {
-            String reportOutputPath = arg + "/" + getFileNameWithTimeStamp(fileName);
+            String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(fileName);
             String failedRead = "Failed to read input file \n" + e.getMessage();
             File file = new File(reportOutputPath);
 
