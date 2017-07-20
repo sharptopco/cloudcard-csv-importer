@@ -178,18 +178,8 @@ public class Main {
 
         List<String> lines = null;
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFile.getAbsoluteFile().toString()));
-            lines = new ArrayList<String>();
-            String line;
-            int initialHeaderRead = 0;
-            while ((line = bufferedReader.readLine()) != null) {
-                if (initialHeaderRead == 0) {
-                    calculateIndexForOutput(line);
-                    initialHeaderRead++;
-                }
-                lines.add(line);
-            }
-            bufferedReader.close();
+            lines = FileUtil.convertTextFileToListOfLines(inputFile);
+            calculateIndexForOutput(lines.get(0));
         } catch (IOException e) {
             String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(inputFile);
             String failedRead = "Failed to read input file \n" + e.getMessage();
