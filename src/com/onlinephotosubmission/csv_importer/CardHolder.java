@@ -114,6 +114,21 @@ class CardHolder {
         notes = inputNotes;
     }
 
+    public static void setHeaderIndexes(String header) {
+
+        String[] Header = header.split(Main.delimiter);
+        for (int i = 0; i < Header.length; i++) {
+            for (int j = 0; j < headerTypes.length; j++) {
+                if (headerTypes[ j ].equals(Header[ i ])) {
+                    if (i == 0) { setEmailIndex(j); }
+                    if (i == 1) { setIdIndex(j); }
+                    if (i == 2) { setCampusIndex(j); }
+                    if (i == 3) { setNotesIndex(j); }
+                }
+            }
+        }
+    }
+
     public static String csvHeader() {
 
         String[] header = new String[ headerTypes.length ];

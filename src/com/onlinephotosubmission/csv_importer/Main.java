@@ -21,12 +21,16 @@ public class Main {
     public static final String ACCESS_TOKEN = "access.token";
     public static final String ORG_ID = "organization.id";
     public static final String BASE_URL = "base.url";
-    private static String delimiter = ",";
+    public static String delimiter = ",";
 
     public static void main(String[] args) throws Exception {
 
         Properties properties = new Properties();
-        properties.load(new FileInputStream(CONFIG_PROPERTIES));
+        if (args.length > 0) {
+            properties.load(new FileInputStream(args[ 0 ]));
+        } else {
+            properties.load(new FileInputStream(CONFIG_PROPERTIES));
+        }
 
         for (File inputFile : loadInputFiles(properties)) {
             List<String> lines = convertTextFileToListOfLines(inputFile, properties);
@@ -143,21 +147,6 @@ public class Main {
         return lines.subList(1, lines.size());
     }
 
-    public static void calculateIndexForOutput(String header) {
-
-        String[] Header = header.split(delimiter);
-        for (int i = 0; i < Header.length; i++) {
-            for (int j = 0; j < CardHolder.headerTypes.length; j++) {
-                if (CardHolder.headerTypes[ j ].equals(Header[ i ])) {
-                    if (i == 0) { CardHolder.setEmailIndex(j); }
-                    if (i == 1) { CardHolder.setIdIndex(j); }
-                    if (i == 2) { CardHolder.setCampusIndex(j); }
-                    if (i == 3) { CardHolder.setNotesIndex(j); }
-                }
-            }
-        }
-    }
-
     private static List<CardHolder> convertLinesIntoCardHolders(List<String> lines) {
 
         List<CardHolder> cardHolders = new ArrayList<CardHolder>();
@@ -178,7 +167,7 @@ public class Main {
         List<String> lines = null;
         try {
             lines = FileUtil.convertTextFileToListOfLines(inputFile);
-            calculateIndexForOutput(lines.get(0));
+            CardHolder.setHeaderIndexes(lines.get(0));
             lines = dropHeaderFromList(lines);
         } catch (IOException e) {
             String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(inputFile);
