@@ -111,7 +111,7 @@ public class Main {
 
         String content = "";
         String header = "Status" + ", " + cardHolders.get(0) + "\n";
-        for (CardHolder cardHolder : dropHeaderFromList(cardHolders)) {
+        for (CardHolder cardHolder : cardHolders) {
 
             String result;
             if (!cardHolder.validate()) {
@@ -139,9 +139,9 @@ public class Main {
         }
     }
 
-    private static List<CardHolder> dropHeaderFromList(List<CardHolder> cardHolders) {
+    private static List<String> dropHeaderFromList(List<String> lines) {
 
-        return cardHolders.subList(1, cardHolders.size());
+        return lines.subList(1, lines.size());
     }
 
     public static void calculateIndexForOutput(String header) {
@@ -180,6 +180,7 @@ public class Main {
         try {
             lines = FileUtil.convertTextFileToListOfLines(inputFile);
             calculateIndexForOutput(lines.get(0));
+            lines = dropHeaderFromList(lines);
         } catch (IOException e) {
             String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(inputFile);
             String failedRead = "Failed to read input file \n" + e.getMessage();
