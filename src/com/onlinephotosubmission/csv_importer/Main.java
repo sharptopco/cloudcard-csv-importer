@@ -14,21 +14,29 @@ import java.util.Properties;
 
 public class Main {
 
-    public static String[] headerTypes = {"Email", "ID", "Campus", "Notes"};
+    public static final boolean DEBUG = true;
+    public static final String CONFIG_PROPERTIES = "config.properties";
+    public static final String INPUT_FILE = "input.file";
+    public static final String REPORT_FILE = "report.file";
+    public static final String COMPLETED_FILE = "completed.file";
+    public static final String ACCESS_TOKEN = "access.token";
+    public static final String ORG_ID = "organization.id";
+    public static final String BASE_URL = "base.url";
+    public static String[] headerTypes = {"Email", "ORG_ID", "Campus", "Notes"};
     private static String delimiter = ",";
 
     public static void main(String[] args) throws Exception {
 
         Properties properties = new Properties();
-        properties.load(new FileInputStream("config.properties"));
-        File[] inputFiles = getCSVFilesFromDirectory(properties.getProperty("InputFile"));
+        properties.load(new FileInputStream(CONFIG_PROPERTIES));
+        File[] inputFiles = getCSVFilesFromDirectory(properties.getProperty(INPUT_FILE));
 
         for (File inputFile : inputFiles) {
             String fileName = removeFileNameExtension(inputFile);
-            List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties.getProperty("ReportFile"));
+            List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties.getProperty(REPORT_FILE));
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
-            saveCardHolders(cardHolders, fileName, properties.getProperty("ReportFile"), properties);
-            transferFileToCompleted(inputFile, properties.getProperty("CompletedFile"));
+            saveCardHolders(cardHolders, fileName, properties.getProperty(REPORT_FILE), properties);
+            transferFileToCompleted(inputFile, properties.getProperty(COMPLETED_FILE));
         }
     }
 
@@ -48,15 +56,15 @@ public class Main {
 
         try {
 
-            URL url = new URL(properties.getProperty("URL") + "/api/people");
+            URL url = new URL(properties.getProperty(BASE_URL) + "/api/people");
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("X-Auth-Token", properties.getProperty("AccessToken"));
+            connection.setRequestProperty("X-Auth-Token", properties.getProperty(ACCESS_TOKEN));
             connection.setRequestProperty("Accept", "application/json");
 
-            String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," + "\"organization\":{\"id\":" + properties.getProperty("ID") + "}," + "\"customFields\":{" + "\"Campus\":\"" + cardHolder.getCampus() + "\"," + "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " + "\"identifier\":\"" + cardHolder.getID() + "\" }";
+            String input = "{ \"email\":\"" + cardHolder.getEmail() + "\"," + "\"organization\":{\"id\":" + properties.getProperty(ORG_ID) + "}," + "\"customFields\":{" + "\"Campus\":\"" + cardHolder.getCampus() + "\"," + "\"Notes\":\"" + cardHolder.getNotes() + "\"}, " + "\"identifier\":\"" + cardHolder.getID() + "\" }";
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(input.getBytes());
             outputStream.flush();
