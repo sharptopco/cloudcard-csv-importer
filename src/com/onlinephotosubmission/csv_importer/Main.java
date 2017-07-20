@@ -30,10 +30,9 @@ public class Main {
         properties.load(new FileInputStream(CONFIG_PROPERTIES));
 
         for (File inputFile : loadInputFiles(properties)) {
-            String fileName = removeFileNameExtension(inputFile);
-            List<String> lines = convertTextFileToListOfLines(inputFile.getAbsoluteFile().toString(), fileName, properties);
+            List<String> lines = convertTextFileToListOfLines(inputFile, properties);
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
-            saveCardHolders(cardHolders, fileName, properties);
+            saveCardHolders(cardHolders, inputFile, properties);
             moveFileToCompleted(inputFile, properties);
         }
     }
@@ -72,7 +71,7 @@ public class Main {
         connection.setRequestProperty("Accept", "application/json");
     }
 
-    private static String removeFileNameExtension(File csvfile) {
+    private static String stripFileExtension(File csvfile) {
 
         return csvfile.getName().replaceFirst("[.][^.]+$", "");
     }
@@ -89,12 +88,12 @@ public class Main {
         });
     }
 
-    private static String createReportFileName(String fileName) {
+    private static String createReportFileName(File inputFile) {
 
         LocalDateTime timeStamp = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH" + "\u02f8" + "mm" + "\u02f8" + "ss");
         String formatDateTime = timeStamp.format(formatter);
-        return fileName + "-" + formatDateTime + "-Report.csv";
+        return stripFileExtension(inputFile) + "-" + formatDateTime + "-Report.csv";
     }
 
     private static void moveFileToCompleted(File inputFile, Properties properties) {
@@ -108,7 +107,7 @@ public class Main {
         }
     }
 
-    private static void saveCardHolders(List<CardHolder> cardHolders, String fileName, Properties properties) {
+    private static void saveCardHolders(List<CardHolder> cardHolders, File inputFile, Properties properties) {
 
         String content = "";
         String header = "Status" + ", " + cardHolders.get(0) + "\n";
@@ -123,7 +122,7 @@ public class Main {
             content = content + result + ", " + cardHolder + "\n";
         }
         try {
-            String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(fileName);
+            String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(inputFile);
             File file = new File(reportOutputPath);
 
             if (!file.exists()) {
@@ -175,11 +174,11 @@ public class Main {
         return cardHolder;
     }
 
-    private static List<String> convertTextFileToListOfLines(String csvPath, String fileName, Properties properties) throws Exception {
+    private static List<String> convertTextFileToListOfLines(File inputFile, Properties properties) throws Exception {
 
         List<String> lines = null;
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(csvPath));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFile.getAbsoluteFile().toString()));
             lines = new ArrayList<String>();
             String line;
             int initialHeaderRead = 0;
@@ -192,7 +191,7 @@ public class Main {
             }
             bufferedReader.close();
         } catch (IOException e) {
-            String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(fileName);
+            String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(inputFile);
             String failedRead = "Failed to read input file \n" + e.getMessage();
             File file = new File(reportOutputPath);
 
