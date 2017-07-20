@@ -168,7 +168,7 @@ public class Main {
         List<String> lines = null;
         try {
             lines = FileUtil.convertTextFileToListOfLines(inputFile);
-            CardHolder.setHeaderIndexes(lines.get(0));
+            CardHolder.setHeader(lines.get(0).split(delimiter));
             lines = dropHeaderFromList(lines);
         } catch (IOException e) {
             String reportOutputPath = properties.getProperty(REPORT_DIR) + "/" + createReportFileName(inputFile);

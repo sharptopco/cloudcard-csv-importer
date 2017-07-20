@@ -5,20 +5,17 @@ package com.onlinephotosubmission.csv_importer;
  */
 class CardHolder {
 
-    public static final String[] headerTypes = {"Email", "id", "Campus", "Notes"};
-
     private static Integer organizationId;
 
-    private static int emailIndex;
-    private static int idIndex;
-    private static int campusIndex;
-    private static int notesIndex;
+    private static String[] header;
+
+    private static final int EMAIL_INDEX = 0;
+    private static final int ID_INDEX = 0;
     private String email;
     private String id;
-    private String campus;
-    private String notes;
     private String inputString;
     private String delimiter;
+    String[] fieldValues;
 
     CardHolder() {
 
@@ -29,46 +26,6 @@ class CardHolder {
         this.inputString = inputString;
         this.delimiter = delimiter;
         this.parseInputString();
-    }
-
-    public static int getEmailIndex() {
-
-        return emailIndex;
-    }
-
-    public static void setEmailIndex(int emailIndex) {
-
-        CardHolder.emailIndex = emailIndex;
-    }
-
-    public static int getIdIndex() {
-
-        return idIndex;
-    }
-
-    public static void setIdIndex(int idIndex) {
-
-        CardHolder.idIndex = idIndex;
-    }
-
-    public static int getCampusIndex() {
-
-        return campusIndex;
-    }
-
-    public static void setCampusIndex(int campusIndex) {
-
-        CardHolder.campusIndex = campusIndex;
-    }
-
-    public static int getNotesIndex() {
-
-        return notesIndex;
-    }
-
-    public static void setNotesIndex(int notesIndex) {
-
-        CardHolder.notesIndex = notesIndex;
     }
 
     public void setDelimiter(String delimiter) {
@@ -96,26 +53,6 @@ class CardHolder {
         id = inputID;
     }
 
-    public String getCampus() {
-
-        return campus;
-    }
-
-    void setCampus(String inputCampus) {
-
-        campus = inputCampus;
-    }
-
-    public String getNotes() {
-
-        return notes;
-    }
-
-    void setNotes(String inputNotes) {
-
-        notes = inputNotes;
-    }
-
     public static int getOrganizationId() {
 
         return organizationId;
@@ -130,56 +67,59 @@ class CardHolder {
         CardHolder.organizationId = organizationId;
     }
 
-    public static void setHeaderIndexes(String header) {
+    public static String[] getHeader() {
 
-        String[] Header = header.split(Main.delimiter);
-        for (int i = 0; i < Header.length; i++) {
-            for (int j = 0; j < headerTypes.length; j++) {
-                if (headerTypes[ j ].equals(Header[ i ])) {
-                    if (i == 0) { setEmailIndex(j); }
-                    if (i == 1) { setIdIndex(j); }
-                    if (i == 2) { setCampusIndex(j); }
-                    if (i == 3) { setNotesIndex(j); }
-                }
-            }
+        return header;
+    }
+
+    public static void setHeader(String[] header) throws IllegalAccessException {
+
+        if (CardHolder.header != null) {
+            throw new IllegalAccessException("CardHolder.header can only be set once and never modified.");
         }
+
+        CardHolder.header = header;
     }
 
     public static String csvHeader() {
 
-        String[] header = new String[ headerTypes.length ];
-        header[ emailIndex ] = headerTypes[ 0 ];
-        header[ idIndex ] = headerTypes[ 1 ];
-        header[ campusIndex ] = headerTypes[ 2 ];
-        header[ notesIndex ] = headerTypes[ 3 ];
         return String.join(", ", header);
     }
 
     public void parseInputString() {
 
-        String[] cardHolderData = inputString.split(delimiter);
+        fieldValues = inputString.split(delimiter);
 
-        email = cardHolderData[ emailIndex ];
-        id = cardHolderData[ idIndex ];
-        campus = cardHolderData[ campusIndex ];
-        notes = cardHolderData[ notesIndex ];
+        email = fieldValues[ EMAIL_INDEX ];
+        id = fieldValues[ ID_INDEX ];
     }
 
     public String toJSON() {
 
-        String customFieldsAsJSON = "{" + "\"Campus\":\"" + campus + "\"," + "\"Notes\":\"" + notes + "\"}";
-        return "{ \"email\":\"" + email + "\"," + "\"organization\":{\"id\":" + organizationId + "}," + "\"customFields\":" + customFieldsAsJSON + ", " + "\"identifier\":\"" + id + "\" }";
+        return "{ \"email\":\"" + email + "\"," + "\"organization\":{\"id\":" + organizationId + "}," + "\"customFields\":" + getCustomFieldsAsJSON() + ", " + "\"identifier\":\"" + id + "\" }";
+    }
+
+    private String getCustomFieldsAsJSON() {
+
+        StringBuilder customFieldsAsJSON = new StringBuilder("{");
+        for (int i = 2; i < header.length; i++) {
+            customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ] + "\"");
+            if (i < header.length - 1) {
+                customFieldsAsJSON.append(",");
+            }
+        }
+        customFieldsAsJSON.append("}");
+        return customFieldsAsJSON.toString();
     }
 
     @Override
     public String toString() {
 
-        return email + "," + id + "," + campus + "," + notes;
+        return String.join(", ", fieldValues);
     }
 
     public boolean validate() {
 
-        if (email.isEmpty() || id.isEmpty() || campus.isEmpty() || notes.isEmpty()) return false;
-        else return true;
+        return (email.isEmpty() || id.isEmpty()) ? false : true;
     }
 }
