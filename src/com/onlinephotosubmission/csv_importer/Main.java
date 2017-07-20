@@ -18,6 +18,7 @@ public class Main {
     private static String delimiter = ",";
 
     public static void main(String[] args) throws Exception {
+
         Properties properties = new Properties();
         properties.load(new FileInputStream("config.properties"));
         File[] inputFiles = getCSVFilesFromDirectory(properties.getProperty("InputFile"));
@@ -34,7 +35,7 @@ public class Main {
     private static String[] readPropertyFileIntoLocalVariables(String[] args, String[] fileLocations, Properties properties) throws IOException {
 
         if (args.length == 0) {
-//            savePropertyFileToArguments(properties, fileLocations);
+            //            savePropertyFileToArguments(properties, fileLocations);
         } else {
             fileLocations[ 0 ] = args[ 0 ];
             fileLocations[ 1 ] = args[ 1 ];
@@ -100,8 +101,9 @@ public class Main {
     private static void transferFileToCompleted(File inputFile, String completedFile) {
 
         try {
-            Files.move(Paths.get(inputFile.getAbsoluteFile().toString()), Paths.get(completedFile));
+            Files.move(Paths.get(inputFile.getAbsoluteFile().toString()), Paths.get(completedFile + "/" + inputFile.getName()));
         } catch (IOException e) {
+            System.out.println("Failed to move " + inputFile.getAbsoluteFile().toString() + " to " + completedFile);
             e.printStackTrace();
         }
     }
