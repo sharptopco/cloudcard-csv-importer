@@ -109,7 +109,7 @@ public class Main {
     private static void saveCardHolders(List<CardHolder> cardHolders, File inputFile, Properties properties) {
 
         String content = "";
-        String header = "Status" + ", " + cardHolders.get(0) + "\n";
+        String header = "Status" + ", " + CardHolder.csvHeader() + "\n";
         for (CardHolder cardHolder : cardHolders) {
 
             String result;
