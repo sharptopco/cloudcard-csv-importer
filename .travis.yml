@@ -13,7 +13,7 @@ cache:
     - $HOME/.gradle/wrapper/
 
 before_script:
-  - chmod a+x gradlew
+  - chmod +x gradlew
 
 script:
   - ./gradlew build
