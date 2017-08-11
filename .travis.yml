@@ -12,6 +12,9 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
+before_script:
+  - chmod a+x gradlew
+
 script:
   - ./gradlew build
   - ./gradlew run
