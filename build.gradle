@@ -1,0 +1,5 @@
+apply plugin: 'application'
+
+sourceSets.main.java.srcDirs = ['src']
+
+mainClassName = 'com.onlinephotosubmission.csv_importer.Main'
