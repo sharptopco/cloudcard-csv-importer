@@ -17,8 +17,8 @@ before_script:
   - chmod +x gradlew.bat
 
 script:
-  - ./gradlew build
-  - ./gradlew run
+  - gradlew build
+  - gradlew run
 
 after_success:
   - echo Success!
