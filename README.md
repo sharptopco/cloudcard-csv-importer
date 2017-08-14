@@ -5,6 +5,10 @@ Summary:
 
 Imports cardholders from a CSV file into [CloudCard Online Photo Submission](https://onlinephotosubmission.com).  This project is designed to be run as a scheduled job and in conjunction with a scheduled report that saves a CSV of new cardholders in a preconfigured input directory, which essentially automates importing new cardholders in CloudCard.
 
+Tutorial
+---
+<iframe width="560" height="315" src="https://www.youtube.com/embed/YjtsWjxRoq4" frameborder="0" allowfullscreen></iframe>
+
 Requirements:
 ---
 Java 7 or higher (preferably Java 8)
