@@ -12,13 +12,12 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-before_script:
+before_install:
   - chmod +x gradlew
-  - chmod +x gradlew.bat
 
 script:
-  - gradlew build
-  - gradlew run
+  - ./gradlew build
+  - ./gradlew run
 
 after_success:
   - echo Success!
