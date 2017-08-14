@@ -7,7 +7,7 @@ Imports cardholders from a CSV file into [CloudCard Online Photo Submission](htt
 
 Tutorial Video
 ---
-[YouTube CloudCard CSV Importer Tutorial](https://youtu.be/YjtsWjxRoq4)
+[YouTube: CloudCard CSV Importer Tutorial](https://youtu.be/YjtsWjxRoq4)
 
 Requirements:
 ---
