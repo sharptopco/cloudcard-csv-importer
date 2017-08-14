@@ -26,11 +26,17 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Properties properties = new Properties();
-        if (args.length > 0) {
-            properties.load(new FileInputStream(args[ 0 ]));
-        } else {
-            properties.load(new FileInputStream(CONFIG_PROPERTIES));
+        try {
+            if (args.length > 0) {
+                properties.load(new FileInputStream(args[ 0 ]));
+            } else {
+                properties.load(new FileInputStream(CONFIG_PROPERTIES));
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("*** ERROR: Filed to load properties file. Caused by: " + e.getMessage() + " ***");
+            return;
         }
+        System.out.println("Properties Loaded --> " + properties);
 
         CardHolder.setOrganizationId(Integer.valueOf(properties.getProperty(ORG_ID_KEY)));
 
@@ -80,16 +86,22 @@ public class Main {
         return csvfile.getName().replaceFirst("[.][^.]+$", "");
     }
 
-    private static File[] loadInputFiles(Properties properties) {
+    private static File[] loadInputFiles(Properties properties) throws FileNotFoundException {
 
         File dir = new File(properties.getProperty(INPUT_DIR));
-        return dir.listFiles(new FilenameFilter() {
+        File[] files = dir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir1, String name) {
 
                 return name.endsWith(".csv");
             }
         });
+        if (files == null) {
+            throw new FileNotFoundException("Input directory not found.");
+        } else if (files.length == 0) {
+            System.out.println("No input file found.");
+        }
+        return files;
     }
 
     private static String createReportFileName(File inputFile) {
