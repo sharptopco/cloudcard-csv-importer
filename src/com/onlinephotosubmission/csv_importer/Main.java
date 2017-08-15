@@ -21,7 +21,7 @@ public class Main {
     public static final String ACCESS_TOKEN = "access.token";
     public static final String ORG_ID_KEY = "organization.id";
     public static final String BASE_URL = "base.url";
-    public static String delimiter = ",";
+    public static String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
     public static void main(String[] args) throws Exception {
 
