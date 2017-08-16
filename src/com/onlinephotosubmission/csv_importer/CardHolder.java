@@ -5,106 +5,121 @@ package com.onlinephotosubmission.csv_importer;
  */
 class CardHolder {
 
-    private static int emailIndex;
-    private static int idIndex;
-    private static int campusIndex;
-    private static int notesIndex;
+    private static Integer organizationId;
+
+    private static String[] header;
+
+    private static final int EMAIL_INDEX = 0;
+    private static final int ID_INDEX = 0;
     private String email;
-    private String ID;
-    private String campus;
-    private String notes;
+    private String id;
     private String inputString;
     private String delimiter;
+    String[] fieldValues;
 
     CardHolder() {
+
     }
 
     CardHolder(String delimiter, String inputString) {
+
         this.inputString = inputString;
         this.delimiter = delimiter;
         this.parseInputString();
     }
 
-    public static int getEmailIndex() {
-        return emailIndex;
+    public void setDelimiter(String delimiter) {
+
+        this.delimiter = delimiter;
     }
 
-    public static void setEmailIndex(int emailIndex) {
-        CardHolder.emailIndex = emailIndex;
+    String getEmail() {
+
+        return email;
     }
-
-    public static int getIdIndex() {
-        return idIndex;
-    }
-
-    public static void setIdIndex(int idIndex) {
-        CardHolder.idIndex = idIndex;
-    }
-
-    public static int getCampusIndex() {
-        return campusIndex;
-    }
-
-    public static void setCampusIndex(int campusIndex) {
-        CardHolder.campusIndex = campusIndex;
-    }
-
-    public static int getNotesIndex() {
-        return notesIndex;
-    }
-
-    public static void setNotesIndex(int notesIndex) {
-        CardHolder.notesIndex = notesIndex;
-    }
-
-    public void parseInputString() {
-        String[] cardHolderData = inputString.split(delimiter);
-
-        email = cardHolderData[emailIndex];
-        ID = cardHolderData[idIndex];
-        campus = cardHolderData[campusIndex];
-        notes = cardHolderData[notesIndex];
-    }
-
-    public void setDelimiter(String delimiter) {this.delimiter = delimiter;}
-
-    String getEmail() { return email; }
 
     void setEmail(String inputEmail) {
+
         email = inputEmail;
     }
 
-    public String getID() {
-        return ID;
+    public String getId() {
+
+        return id;
     }
 
-    void setID(String inputID) {
-        ID = inputID;
+    void setId(String inputID) {
+
+        id = inputID;
     }
 
-    public String getCampus() { return campus; }
+    public static int getOrganizationId() {
 
-    void setCampus(String inputCampus) {
-        campus = inputCampus;
+        return organizationId;
     }
 
-    public String getNotes() {
-        return notes;
+    public static void setOrganizationId(int organizationId) throws IllegalAccessException {
+
+        if (CardHolder.organizationId != null) {
+            throw new IllegalAccessException("Organization id can only be set once and never modified.");
+        }
+
+        CardHolder.organizationId = organizationId;
     }
 
-    void setNotes(String inputNotes) {
-        notes = inputNotes;
+    public static String[] getHeader() {
+
+        return header;
+    }
+
+    public static void setHeader(String[] header) throws IllegalAccessException {
+
+        if (CardHolder.header != null) {
+            throw new IllegalAccessException("CardHolder.header can only be set once and never modified.");
+        }
+
+        CardHolder.header = header;
+    }
+
+    public static String csvHeader() {
+
+        return String.join(", ", header);
+    }
+
+    public void parseInputString() {
+
+        fieldValues = inputString.split(delimiter);
+
+        email = fieldValues[ EMAIL_INDEX ];
+        id = fieldValues[ ID_INDEX ];
+    }
+
+    public String toJSON() {
+
+        return "{ \"email\":\"" + email + "\"," + "\"organization\":{\"id\":" + organizationId + "}," + "\"customFields\":" + getCustomFieldsAsJSON() + ", " + "\"identifier\":\"" + id + "\" }";
+    }
+
+    private String getCustomFieldsAsJSON() {
+
+        StringBuilder customFieldsAsJSON = new StringBuilder("{");
+        for (int i = 2; i < header.length; i++) {
+            customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ] + "\"");
+            if (i < header.length - 1) {
+                customFieldsAsJSON.append(",");
+            }
+        }
+        customFieldsAsJSON.append("}");
+        return customFieldsAsJSON.toString();
     }
 
     @Override
     public String toString() {
-        return email + "," + ID + "," + campus + "," + notes;
+
+        return String.join(", ", fieldValues);
     }
 
     public boolean validate() {
-        if (email.isEmpty() || ID.isEmpty() || campus.isEmpty() || notes.isEmpty())
-            return false;
-        else
-            return true;
+
+        return (email.isEmpty() || id.isEmpty()) ? false : true;
     }
 }
