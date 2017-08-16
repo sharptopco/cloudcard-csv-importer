@@ -22,7 +22,6 @@ before_install:
 
 script:
   - ./gradlew build
-  - ./gradlew run
 
-after_success:
-  - echo Success!
+addons:
+  artifacts: true
