@@ -31,4 +31,4 @@ after_success:
 addons:
   artifacts:
     paths:
-      - cloudcard-csv-importer-*.jar
+      - $(ls cloudcard-csv-importer-*.jar)
