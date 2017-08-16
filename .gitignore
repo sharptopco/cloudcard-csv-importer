@@ -3,3 +3,6 @@ out
 *.iml
 *.class
 config.properties
+.gradle
+build
+*.jar

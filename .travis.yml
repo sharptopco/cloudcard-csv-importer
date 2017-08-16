@@ -23,5 +23,12 @@ before_install:
 script:
   - ./gradlew build
 
+after_success:
+ - commit_hash=`git rev-parse --short HEAD`
+ - label="`date +%Y%m%d%H%M`-$commit_hash"
+ - mv build/libs/cloudcard-csv-importer.jar cloudcard-csv-importer-$label.jar
+
 addons:
-  artifacts: true
+  artifacts:
+    paths:
+      - cloudcard-csv-importer-*.jar
