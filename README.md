@@ -1,4 +1,4 @@
-# cloudcard-csv-importer
+# cloudcard-csv-importer [![Build Status](https://travis-ci.org/sharptopco/cloudcard-csv-importer.svg?branch=master)](https://travis-ci.org/sharptopco/cloudcard-csv-importer)
 
 Summary:
 ---
