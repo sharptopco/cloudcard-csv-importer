@@ -1,5 +1,7 @@
 package com.onlinephotosubmission.csv_importer;
 
+import java.util.Arrays;
+
 /**
  * Created by Brandon on 7/6/2017.
  */
@@ -10,7 +12,7 @@ class CardHolder {
     private static String[] header;
 
     private static final int EMAIL_INDEX = 0;
-    private static final int ID_INDEX = 0;
+    private static final int ID_INDEX = 1;
     private String email;
     private String id;
     private String inputString;
@@ -78,6 +80,7 @@ class CardHolder {
             throw new IllegalAccessException("CardHolder.header can only be set once and never modified.");
         }
 
+        Arrays.parallelSetAll(header, (i) -> header[ i ].trim());
         CardHolder.header = header;
     }
 
@@ -89,6 +92,7 @@ class CardHolder {
     public void parseInputString() {
 
         fieldValues = inputString.split(delimiter);
+        Arrays.parallelSetAll(fieldValues, (i) -> fieldValues[ i ].trim());
 
         email = fieldValues[ EMAIL_INDEX ];
         id = fieldValues[ ID_INDEX ];
@@ -103,7 +107,7 @@ class CardHolder {
 
         StringBuilder customFieldsAsJSON = new StringBuilder("{");
         for (int i = 2; i < header.length; i++) {
-            customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ] + "\"");
+            customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\"");
             if (i < header.length - 1) {
                 customFieldsAsJSON.append(",");
             }
