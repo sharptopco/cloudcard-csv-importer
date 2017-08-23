@@ -1,0 +1,34 @@
+language: java
+
+jdk:
+  - oraclejdk8
+  #- oraclejdk7
+
+notifications:
+  slack:
+    on_success: never
+    on_failure: always
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+before_install:
+  - chmod +x gradlew
+
+script:
+  - ./gradlew build
+
+after_success:
+ - commit_hash=`git rev-parse --short HEAD`
+ - label="`date +%Y%m%d%H%M`-$commit_hash"
+ - mv build/libs/cloudcard-csv-importer.jar cloudcard-csv-importer-$label.jar
+
+addons:
+  artifacts:
+    paths:
+      - $(ls cloudcard-csv-importer-*.jar)
