@@ -6,3 +6,4 @@ config.properties
 .gradle
 build
 *.jar
+completed
