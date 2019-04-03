@@ -30,4 +30,4 @@ Create a properties file similar to `src/config-template.properties`
 * `report.directory`: a line by line report will be generated in this directory for each input file.
 * `organization.id`: this is the organization's ID number in [online photo submission](https://onlinephotosubmission.com).
 * `base.url`: this is the URL for the online photo submission app.  Most likely https://app.cloudcardtools.com
-* `access.token`: this is tha API key that authenticates the importer with [online photo submission](https://onlinephotosubmission.com).
+* `access.token`: this is tha API key that authenticates the importer with [online photo submission](https://onlinephotosubmission.com). You can use `get-token.sh` on Mac/Linux or `get-token.ps1` on Windows to get your access token.
