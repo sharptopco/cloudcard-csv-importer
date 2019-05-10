@@ -6,8 +6,3 @@ for f in ../output/*.csv; do
     [ -e "$f" ] && rm "$f" || echo "$f is already clean"
     break
 done
-
-for f in com/onlinephotosubmission/csv_importer/*.class; do
-    [ -e "$f" ] && rm "$f" || echo "$f is already clean"
-    break
-done
