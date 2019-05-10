@@ -10,11 +10,14 @@ class CardHolder {
     private static Integer organizationId;
 
     private static String[] header;
+    private static int supportingDocsRequiredIndex = -1;
 
     private static final int EMAIL_INDEX = 0;
     private static final int ID_INDEX = 1;
+    private static final String SUPPORTING_DOCS_REQD_HEADER = "SupportingDocumentsRequired";
     private String email;
     private String id;
+    private String supportingDocsRequired;
     private String inputString;
     private String delimiter;
     String[] fieldValues;
@@ -81,6 +84,7 @@ class CardHolder {
         }
 
         Arrays.parallelSetAll(header, (i) -> header[ i ].trim());
+        supportingDocsRequiredIndex = Arrays.asList(header).indexOf(SUPPORTING_DOCS_REQD_HEADER);
         CardHolder.header = header;
     }
 
@@ -96,17 +100,25 @@ class CardHolder {
 
         email = fieldValues[ EMAIL_INDEX ];
         id = fieldValues[ ID_INDEX ];
+        if (supportingDocsRequiredIndex >= 0) supportingDocsRequired = fieldValues[ supportingDocsRequiredIndex ];
     }
 
     public String toJSON() {
 
-        return "{ \"email\":\"" + email + "\"," + "\"organization\":{\"id\":" + organizationId + "}," + "\"customFields\":" + getCustomFieldsAsJSON() + ", " + "\"identifier\":\"" + id + "\" }";
+        return "{ \"email\":\"" + email + "\"," + "\"organization\":{\"id\":" + organizationId + "}," + "\"customFields\":" + getCustomFieldsAsJSON() + ", " + "\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + " }";
+    }
+
+    private String getSupportingDocsRequiredJSON() {
+
+        if (supportingDocsRequiredIndex < 0) return "";
+        else return ", \"additionalPhotoRequired\":" + supportingDocsRequired;
     }
 
     private String getCustomFieldsAsJSON() {
 
         StringBuilder customFieldsAsJSON = new StringBuilder("{");
         for (int i = 2; i < header.length; i++) {
+            if (i == supportingDocsRequiredIndex) continue;
             customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\"");
             if (i < header.length - 1) {
                 customFieldsAsJSON.append(",");
