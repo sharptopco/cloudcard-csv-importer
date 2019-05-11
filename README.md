@@ -1,5 +1,3 @@
-# cloudcard-csv-importer [![Build Status](https://travis-ci.org/sharptopco/cloudcard-csv-importer.svg?branch=master)](https://travis-ci.org/sharptopco/cloudcard-csv-importer)
-
 Summary:
 ---
 
@@ -7,7 +5,7 @@ Imports cardholders from a CSV file into [CloudCard Online Photo Submission](htt
 
 Tutorial Video
 ---
-[YouTube: CloudCard CSV Importer Tutorial](https://youtu.be/YjtsWjxRoq4)
+[YouTube: CloudCard CSV Importer Tutorial](https://youtu.be/Pu6HXLk6jZ4)
 
 Requirements:
 ---
@@ -28,8 +26,7 @@ Create a properties file similar to `src/config-template.properties`
 * `input.directory`: this is the directory into which your automated report should save CSV files.
 * `completed.directory`: once imported, completed CSV files are moved into this directory.
 * `report.directory`: a line by line report will be generated in this directory for each input file.
-* `organization.id`: this is the organization's ID number in [online photo submission](https://onlinephotosubmission.com).
-* `base.url`: this is the URL for the online photo submission app.  Most likely https://app.cloudcardtools.com
+* `base.url`: this is the URL for the online photo submission app.  Most likely `https://api.onlinephotosubmission.com`
 * `access.token`: this is tha API key that authenticates the importer with [online photo submission](https://onlinephotosubmission.com). You can use `get-token.sh` on Mac/Linux or `get-token.ps1` on Windows to get your access token.
 
 CSV Requirements
