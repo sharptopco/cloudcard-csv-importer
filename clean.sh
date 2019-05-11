@@ -2,7 +2,6 @@
 
 [ -e "../input/test-people.csv" ] && echo "../input/test-people.csv is already replaced" || mv completed/test-people*.csv input/.
 
-for f in output/*.csv; do
-    [ -e "$f" ] && rm "$f" || echo "$f is already clean"
-    break
-done
+cd output
+rm *.csv
+cd ..
