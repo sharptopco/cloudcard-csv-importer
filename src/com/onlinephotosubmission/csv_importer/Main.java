@@ -21,7 +21,7 @@ public class Main {
     public static final String ACCESS_TOKEN = "access.token";
     public static final String ORG_ID_KEY = "organization.id";
     public static final String BASE_URL = "base.url";
-    public static String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+    public static final String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
     public static void main(String[] args) throws Exception {
 
@@ -63,6 +63,32 @@ public class Main {
             outputStream.flush();
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                return "Failed : HTTP error code : " + connection.getResponseCode();
+            }
+
+            connection.disconnect();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Success";
+    }
+
+    private static String updateInCloudCard(CardHolder cardHolder, Properties properties) {
+
+        try {
+
+            URL url = new URL(properties.getProperty(BASE_URL) + "/api/people/" + cardHolder.getId() + "?findBy=identifier&updateRoles=false");
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("PUT");
+            setConnectionHeaders(connection, properties);
+
+            OutputStream outputStream = connection.getOutputStream();
+            outputStream.write(cardHolder.toJSON(true).getBytes());
+            outputStream.flush();
+
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK || connection.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
                 return "Failed : HTTP error code : " + connection.getResponseCode();
             }
 
@@ -125,6 +151,8 @@ public class Main {
 
     private static void saveCardHolders(List<CardHolder> cardHolders, File inputFile, Properties properties) {
 
+        boolean updateCardholders = inputFile.getName().toLowerCase().contains("update");
+
         String content = "";
         String header = "Status" + ", " + CardHolder.csvHeader() + "\n";
         for (CardHolder cardHolder : cardHolders) {
@@ -133,7 +161,11 @@ public class Main {
             if (!cardHolder.validate()) {
                 result = "failed validation";
             } else {
-                result = importToCloudCard(cardHolder, properties);
+                if (updateCardholders) {
+                    result = "UPDATE " + updateInCloudCard(cardHolder, properties);
+                } else {
+                    result = "CREATE " + importToCloudCard(cardHolder, properties);
+                }
             }
             content = content + result + ", " + cardHolder + "\n";
         }

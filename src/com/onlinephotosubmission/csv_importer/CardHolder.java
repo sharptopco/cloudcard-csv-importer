@@ -77,11 +77,7 @@ class CardHolder {
         return header;
     }
 
-    public static void setHeader(String[] header) throws IllegalAccessException {
-
-        if (CardHolder.header != null) {
-            throw new IllegalAccessException("CardHolder.header can only be set once and never modified.");
-        }
+    public static void setHeader(String[] header) {
 
         Arrays.parallelSetAll(header, (i) -> header[ i ].trim());
         supportingDocsRequiredIndex = Arrays.asList(header).indexOf(SUPPORTING_DOCS_REQD_HEADER);
@@ -105,7 +101,17 @@ class CardHolder {
 
     public String toJSON() {
 
-        return "{ \"email\":\"" + email + "\"," + "\"organization\":{\"id\":" + organizationId + "}," + "\"customFields\":" + getCustomFieldsAsJSON() + ", " + "\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + " }";
+        return toJSON(false);
+    }
+
+    public String toJSON(boolean forUpdate) {
+
+        StringBuilder json = new StringBuilder("{ \"email\":\"" + email + "\",");
+        json.append(forUpdate ? "" : "\"customFields\":");
+        json.append(getCustomFieldsAsJSON(forUpdate) + ", ");
+        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + " }");
+        System.out.println(json.toString());
+        return json.toString();
     }
 
     private String getSupportingDocsRequiredJSON() {
@@ -114,17 +120,15 @@ class CardHolder {
         else return ", \"additionalPhotoRequired\":" + supportingDocsRequired;
     }
 
-    private String getCustomFieldsAsJSON() {
+    private String getCustomFieldsAsJSON(boolean forUpdate) {
 
-        StringBuilder customFieldsAsJSON = new StringBuilder("{");
+        StringBuilder customFieldsAsJSON = new StringBuilder(forUpdate ? "" : "{");
         for (int i = 2; i < header.length; i++) {
             if (i == supportingDocsRequiredIndex) continue;
-            customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\"");
-            if (i < header.length - 1) {
-                customFieldsAsJSON.append(",");
-            }
+            customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\",");
         }
-        customFieldsAsJSON.append("}");
+        customFieldsAsJSON.deleteCharAt(customFieldsAsJSON.length() - 1);
+        customFieldsAsJSON.append(forUpdate ? "" : "}");
         return customFieldsAsJSON.toString();
     }
 
