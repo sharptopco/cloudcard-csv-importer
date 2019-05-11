@@ -3,3 +3,12 @@ apply plugin: 'application'
 sourceSets.main.java.srcDirs = ['src']
 
 mainClassName = 'com.onlinephotosubmission.csv_importer.Main'
+
+jar {
+    manifest {
+        attributes(
+            'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+            'Main-Class': 'com.onlinephotosubmission.csv_importer.Main'
+        )
+    }
+}
