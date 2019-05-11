@@ -1,0 +1,3 @@
+Email                             ,PERSON_ID,Notes         ,EmailGroup,SupportingDocumentsRequired
+terskine+csv-test@sharptop.co     ,K00061   ,INS SDR=F EG=D,Default   ,false
+erskine.anthony+csv-test@gmail.com,K00081   ,INS SDR=T EG=B,Bacon     ,true

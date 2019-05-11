@@ -1,0 +1,3 @@
+Email                                ,PERSON_ID,Notes         ,EmailGroup,SupportingDocumentsRequired
+terskine+csv-updated@sharptop.co     ,K00061   ,UPD SDR=T EG=B,Bacon     ,true
+erskine.anthony+csv-updated@gmail.com,K00081   ,UPD SDR=F EG=D,Default   ,false
