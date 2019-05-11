@@ -11,7 +11,7 @@ Tutorial Video
 
 Requirements:
 ---
-Java 7 or higher (preferably Java 8)
+- Java 8
 
 Usage:
 ---
@@ -31,3 +31,11 @@ Create a properties file similar to `src/config-template.properties`
 * `organization.id`: this is the organization's ID number in [online photo submission](https://onlinephotosubmission.com).
 * `base.url`: this is the URL for the online photo submission app.  Most likely https://app.cloudcardtools.com
 * `access.token`: this is tha API key that authenticates the importer with [online photo submission](https://onlinephotosubmission.com). You can use `get-token.sh` on Mac/Linux or `get-token.ps1` on Windows to get your access token.
+
+CSV Requirements
+---
+- The first field must be the person's Email.
+- The second field must be the person's ID number.
+- The email group, if specified, must be called `EmailGroup`.
+- The Supporting Documents Required field, if specified, must be called `SupportingDocumentsRequired`.
+- Custom field values, if specified, must match the name of the custom field exactly.
