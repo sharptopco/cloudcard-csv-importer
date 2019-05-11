@@ -11,13 +11,16 @@ class CardHolder {
 
     private static String[] header;
     private static int supportingDocsRequiredIndex = -1;
+    private static int emailGroupIndex = -1;
 
     private static final int EMAIL_INDEX = 0;
     private static final int ID_INDEX = 1;
     private static final String SUPPORTING_DOCS_REQD_HEADER = "SupportingDocumentsRequired";
+    private static final String EMAIL_GROUP_HEADER = "EmailGroup";
     private String email;
     private String id;
     private String supportingDocsRequired;
+    private String emailGroupName;
     private String inputString;
     private String delimiter;
     String[] fieldValues;
@@ -81,6 +84,7 @@ class CardHolder {
 
         Arrays.parallelSetAll(header, (i) -> header[ i ].trim());
         supportingDocsRequiredIndex = Arrays.asList(header).indexOf(SUPPORTING_DOCS_REQD_HEADER);
+        emailGroupIndex = Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER);
         CardHolder.header = header;
     }
 
@@ -97,6 +101,7 @@ class CardHolder {
         email = fieldValues[ EMAIL_INDEX ];
         id = fieldValues[ ID_INDEX ];
         if (supportingDocsRequiredIndex >= 0) supportingDocsRequired = fieldValues[ supportingDocsRequiredIndex ];
+        if (emailGroupIndex >= 0) emailGroupName = fieldValues[ emailGroupIndex ];
     }
 
     public String toJSON() {
@@ -109,7 +114,7 @@ class CardHolder {
         StringBuilder json = new StringBuilder("{ \"email\":\"" + email + "\",");
         json.append(forUpdate ? "" : "\"customFields\":");
         json.append(getCustomFieldsAsJSON(forUpdate) + ", ");
-        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + " }");
+        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getEmailGroupJSON() + " }");
         System.out.println(json.toString());
         return json.toString();
     }
@@ -120,11 +125,17 @@ class CardHolder {
         else return ", \"additionalPhotoRequired\":" + supportingDocsRequired;
     }
 
+    private String getEmailGroupJSON() {
+
+        if (emailGroupIndex < 0) return "";
+        else return ", \"emailGroupName\":\"" + emailGroupName + "\"";
+    }
+
     private String getCustomFieldsAsJSON(boolean forUpdate) {
 
         StringBuilder customFieldsAsJSON = new StringBuilder(forUpdate ? "" : "{");
         for (int i = 2; i < header.length; i++) {
-            if (i == supportingDocsRequiredIndex) continue;
+            if (i == supportingDocsRequiredIndex || i == emailGroupIndex) continue;
             customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\",");
         }
         customFieldsAsJSON.deleteCharAt(customFieldsAsJSON.length() - 1);

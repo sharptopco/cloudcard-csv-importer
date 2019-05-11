@@ -1,0 +1,3 @@
+Email        ,PERSON_ID,Notes,SupportingDocumentsRequired
+sdr1@test.edu,1234567  ,SDR1 ,true
+sdr2@test.edu,1234567  ,SDR2 ,false

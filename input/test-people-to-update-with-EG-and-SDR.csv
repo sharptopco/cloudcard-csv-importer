@@ -1,0 +1,2 @@
+Email         ,PERSON_ID,Notes ,EmailGroup,SupportingDocumentsRequired
+eg-sdr@test.edu,1234567  ,EG SDR,Bacon     ,true

@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -88,7 +89,8 @@ public class Main {
             outputStream.write(cardHolder.toJSON(true).getBytes());
             outputStream.flush();
 
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK || connection.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK && connection.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
+                System.out.println(getResponseBody(connection));
                 return "Failed : HTTP error code : " + connection.getResponseCode();
             }
 
@@ -98,6 +100,14 @@ public class Main {
             e.printStackTrace();
         }
         return "Success";
+    }
+
+    private static String getResponseBody(HttpsURLConnection connection) {
+
+        InputStream errorStream = connection.getErrorStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(errorStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        return bufferedReader.lines().collect(Collectors.joining());
     }
 
     private static void setConnectionHeaders(HttpsURLConnection connection, Properties properties) {
