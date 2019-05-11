@@ -99,7 +99,6 @@ class CardHolder {
         json.append(forUpdate ? "" : "\"customFields\":");
         json.append(getCustomFieldsAsJSON(forUpdate) + ", ");
         json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getEmailGroupJSON() + " }");
-        System.out.println(json.toString());
         return json.toString();
     }
 
