@@ -1,6 +1,5 @@
 Summary:
 ---
-
 Imports cardholders from a CSV file into [CloudCard Online Photo Submission](https://onlinephotosubmission.com).  This project is designed to be run as a scheduled job and in conjunction with a scheduled report that saves a CSV of new cardholders in a preconfigured input directory, which essentially automates importing new cardholders in CloudCard.
 
 Tutorial Video
@@ -36,3 +35,9 @@ CSV Requirements
 - The email group, if specified, must be called `EmailGroup`.
 - The Supporting Documents Required field, if specified, must be called `SupportingDocumentsRequired`.
 - Custom field values, if specified, must match the name of the custom field exactly.
+
+Create vs. Update
+---
+- **CREATE:** By default, a create command will be sent for every CSV record in a file. 
+- **UPDATE:** To update records, include the word `update` in the name the CSV file.
+- Create and update requests must be in separate files. 
