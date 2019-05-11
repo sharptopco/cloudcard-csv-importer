@@ -20,7 +20,6 @@ public class Main {
     public static final String REPORT_DIR = "report.directory";
     public static final String COMPLETED_DIR = "completed.directory";
     public static final String ACCESS_TOKEN = "access.token";
-    public static final String ORG_ID_KEY = "organization.id";
     public static final String BASE_URL = "base.url";
     public static final String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
@@ -38,8 +37,6 @@ public class Main {
             return;
         }
         System.out.println("Properties Loaded --> " + properties);
-
-        CardHolder.setOrganizationId(Integer.valueOf(properties.getProperty(ORG_ID_KEY)));
 
         for (File inputFile : loadInputFiles(properties)) {
             List<String> lines = convertTextFileToListOfLines(inputFile, properties);

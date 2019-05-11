@@ -7,8 +7,6 @@ import java.util.Arrays;
  */
 class CardHolder {
 
-    private static Integer organizationId;
-
     private static String[] header;
     private static int supportingDocsRequiredIndex = -1;
     private static int emailGroupIndex = -1;
@@ -59,20 +57,6 @@ class CardHolder {
     void setId(String inputID) {
 
         id = inputID;
-    }
-
-    public static int getOrganizationId() {
-
-        return organizationId;
-    }
-
-    public static void setOrganizationId(int organizationId) throws IllegalAccessException {
-
-        if (CardHolder.organizationId != null) {
-            throw new IllegalAccessException("Organization id can only be set once and never modified.");
-        }
-
-        CardHolder.organizationId = organizationId;
     }
 
     public static String[] getHeader() {
