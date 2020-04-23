@@ -2,19 +2,25 @@ Summary:
 ---
 Imports cardholders from a CSV file into [CloudCard Online Photo Submission](https://onlinephotosubmission.com).  This project is designed to be run as a scheduled job and in conjunction with a scheduled report that saves a CSV of new cardholders in a preconfigured input directory, which essentially automates importing new cardholders in CloudCard.
 
-Tutorial Video
+Tutorial Videos
 ---
-[YouTube: CloudCard CSV Importer Tutorial](https://youtu.be/Pu6HXLk6jZ4)
+1. [YouTube: How to Create a Service Account](https://www.youtube.com/watch?v=ZfrjFwrkwZQ)
+1. [YouTube: CloudCard CSV Importer Tutorial](https://youtu.be/Pu6HXLk6jZ4)
 
 Requirements:
 ---
 - Java 8
 
+To test your system, run `java -version`.  The output should look like the following.  The exact version isn't important as long as it starts with `1.8`.
+> java version "1.8.0_72"<br/>
+> Java(TM) SE Runtime Environment (build 1.8.0_72-b15)<br/>
+> Java HotSpot(TM) 64-Bit Server VM (build 25.72-b15, mixed mode)<br/>
+
 Usage:
 ---
-Build the project into a JAR file. For convenience, a JAR file built with Java 8 has been included in the project's root directory.
-
-    java -jar cloudcard-csv-importer.jar {path_to_properties_file}
+1. Create a separate service account for CloudCard Photo Downloader to use. ([Instructions](https://www.youtube.com/watch?v=ZfrjFwrkwZQ))
+1. Download [cloudcard-csv-importer.jar](https://github.com/sharptopco/cloudcard-csv-importer/raw/master/cloudcard-csv-importer.jar).
+1. In a terminal window, run the command `java -jar cloudcard-csv-importer.jar {path_to_properties_file}` in the same directory as the JAR file
 
 If not argument is specified `cloudcard-csv-importer` will look for a file called `config.properties` in the current directory.
 

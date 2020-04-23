@@ -87,7 +87,7 @@ public class Main {
             outputStream.flush();
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK && connection.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
-                System.out.println(getResponseBody(connection));
+                    System.out.println(getResponseBody(connection, connection.getResponseCode()));
                 return "Failed : HTTP error code : " + connection.getResponseCode();
             }
 
@@ -99,12 +99,17 @@ public class Main {
         return "Success";
     }
 
-    private static String getResponseBody(HttpsURLConnection connection) {
+    private static String getResponseBody(HttpsURLConnection connection, int responseCode) {
 
         InputStream errorStream = connection.getErrorStream();
-        InputStreamReader inputStreamReader = new InputStreamReader(errorStream);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        return bufferedReader.lines().collect(Collectors.joining());
+        if (errorStream != null) {
+            InputStreamReader inputStreamReader = new InputStreamReader(errorStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            return bufferedReader.lines().collect(Collectors.joining());
+        } else {
+            String response = "Error " + responseCode + " : no response body available.";
+            return response;
+        }
     }
 
     private static void setConnectionHeaders(HttpsURLConnection connection, Properties properties) {
