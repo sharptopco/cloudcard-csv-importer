@@ -40,4 +40,9 @@ Create vs. Update
 ---
 - **CREATE:** By default, a create command will be sent for every CSV record in a file. 
 - **UPDATE:** To update records, include the word `update` in the name the CSV file.
-- Create and update requests must be in separate files. 
+- Create and update requests must be in separate files.
+
+Firewall Requirements
+---
+You will need to enable outbound traffic to the domain specified by the `base.url` property.  
+Most likely, this means enabling outbound traffic to  `api.onlinephotosubmission.com` port `443` 
