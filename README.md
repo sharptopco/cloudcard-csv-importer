@@ -36,11 +36,13 @@ Create a properties file similar to `src/config-template.properties`
 
 CSV Requirements
 ---
+- The file must include a header row.
+- The number of fields in each row should always match the number of fields in the header row.
 - The first field must be the person's Email.
 - The second field must be the person's ID number.
-- The email group, if specified, must be called `EmailGroup`.
-- The Supporting Documents Required field, if specified, must be called `SupportingDocumentsRequired`.
-- Custom field values, if specified, must match the name of the custom field exactly.
+- The email group, if specified, must be called `EmailGroup` in the header row.
+- The Supporting Documents Required field, if specified, must be called `SupportingDocumentsRequired` in the header row.
+- Custom field values, if specified, the name in the header row must match the name of the custom field exactly.
 
 Create vs. Update
 ---
