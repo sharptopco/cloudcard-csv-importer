@@ -57,7 +57,9 @@ public class Main {
             setConnectionHeaders(connection, properties);
 
             OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(cardHolder.toJSON().getBytes());
+            String json = cardHolder.toJSON();
+            System.out.println("json: " + json);
+            outputStream.write(json.getBytes());
             outputStream.flush();
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
@@ -87,7 +89,7 @@ public class Main {
             outputStream.flush();
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK && connection.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
-                    System.out.println(getResponseBody(connection, connection.getResponseCode()));
+                System.out.println(getResponseBody(connection, connection.getResponseCode()));
                 return "Failed : HTTP error code : " + connection.getResponseCode();
             }
 

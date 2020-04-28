@@ -96,8 +96,9 @@ class CardHolder {
     public String toJSON(boolean forUpdate) {
 
         StringBuilder json = new StringBuilder("{ \"email\":\"" + email + "\",");
-        json.append(forUpdate ? "" : "\"customFields\":");
-        json.append(getCustomFieldsAsJSON(forUpdate) + ", ");
+        json.append(forUpdate || header.length <= 2 ? "" : "\"customFields\":");
+        if (header.length > 2)
+            json.append(getCustomFieldsAsJSON(forUpdate) + ", ");
         json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getEmailGroupJSON() + " }");
         return json.toString();
     }
