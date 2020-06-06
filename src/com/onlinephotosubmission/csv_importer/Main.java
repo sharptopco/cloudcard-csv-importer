@@ -21,6 +21,7 @@ public class Main {
     public static final String COMPLETED_DIR = "completed.directory";
     public static final String ACCESS_TOKEN = "access.token";
     public static final String BASE_URL = "base.url";
+    public static final String CHARACTER_SET = "character.set";
     public static final String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
     public static void main(String[] args) throws Exception {
@@ -225,7 +226,11 @@ public class Main {
 
         List<String> lines = null;
         try {
-            lines = FileUtil.convertTextFileToListOfLines(inputFile);
+            String charset = properties.getProperty(CHARACTER_SET);
+            if (charset != null && !charset.isEmpty())
+                lines = FileUtil.convertTextFileToListOfLines(inputFile, charset);
+            else
+                lines = FileUtil.convertTextFileToListOfLines(inputFile);
             CardHolder.setHeader(lines.get(0).split(delimiter));
             lines = dropHeaderFromList(lines);
         } catch (IOException e) {

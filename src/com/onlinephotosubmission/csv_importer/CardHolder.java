@@ -82,6 +82,8 @@ class CardHolder {
         fieldValues = inputString.split(delimiter);
         Arrays.parallelSetAll(fieldValues, (i) -> fieldValues[ i ].trim());
 
+        fieldValues = stripQuotes(fieldValues);
+
         email = fieldValues[ EMAIL_INDEX ];
         id = fieldValues[ ID_INDEX ];
         if (supportingDocsRequiredIndex >= 0) supportingDocsRequired = fieldValues[ supportingDocsRequiredIndex ];
@@ -136,5 +138,21 @@ class CardHolder {
     public boolean validate() {
 
         return (email.isEmpty() || id.isEmpty()) ? false : true;
+    }
+
+    private String[] stripQuotes(String[] stringArray) {
+
+        for (int i = 0; i < stringArray.length; i++) {
+            stringArray[ i ] = stripQuotes(stringArray[ i ]);
+        }
+        return stringArray;
+    }
+
+    private String stripQuotes(String s) {
+
+        if (s.matches("^\".+\"$"))
+            return s.substring(1, s.length() - 1);
+        else
+            return s;
     }
 }
