@@ -66,7 +66,7 @@ class CardHolder {
 
     public static void setHeader(String[] header) {
 
-        Arrays.parallelSetAll(header, (i) -> header[ i ].trim());
+        Arrays.parallelSetAll(header, (i) -> header[ i ].replace("\"", "").trim());
         supportingDocsRequiredIndex = Arrays.asList(header).indexOf(SUPPORTING_DOCS_REQD_HEADER);
         emailGroupIndex = Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER);
         CardHolder.header = header;
