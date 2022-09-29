@@ -38,7 +38,9 @@ Create a properties file similar to `src/config-template.properties`
 * `input.directory`: the directory into which your automated report should save CSV files.
 * `completed.directory`: once imported, completed CSV files are moved into this directory.
 * `report.directory`: a line by line report will be generated in this directory for each input file.
-* `base.url`: the URL for the online photo submission API. Most likely `https://api.onlinephotosubmission.com`
+* `base.url`: the URL for the online photo submission API. 
+  *  Production: `https://api.onlinephotosubmission.com`
+  *  Test: `https://test-api.onlinephotosubmission.com`
 * `access.token`: the API key that authenticates the importer with [online photo submission](https://onlinephotosubmission.com). You can
   use `get-token.sh` on Mac/Linux or `get-token.ps1` on Windows to get your access token.
 * `character.set`: the character set encoding for input files, i.e. `utf8`, `utf16`. Default: `utf8`
