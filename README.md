@@ -15,12 +15,29 @@ Tutorial Videos
 Requirements:
 ---
 
-- Java 8
+## Requirements
+
+- JDK 1.8 - Choose one of the following:
+  - Amazon Corretto 8 (recommended)
+    - [Download](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+    - [Windows Installation Instructions](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/windows-7-install.html)
+    - [Linux Installation Instructions](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/generic-linux-install.html)
+  - [Red Hat OpenJDK 8](https://developers.redhat.com/products/openjdk/download)
+  - Oracle JDK (requires an Oracle support license)
+- 512MB RAM
+- Storage: 1GB 
+- OS: Any
+- Processor: Any
+- Storage Location - OS or Data: Any
+- [Service account with office level access](https://sharptop.atlassian.net/wiki/spaces/CCD/pages/1226440705/User+Roles) to CloudCard Online Photo Submission
+- Outbound network access to the following servers/ports if your organization requires all outbound traffic to be whitelisted
+  - api.onlinephotosubmission.com:443
+  - test-api.onlinephotosubmission.com:443 (only necessary if using CloudCard's test instance)
 
 To test your system, run `java -version`.  The output should look like the following.  The exact version isn't important as long as it starts with `1.8`.
-> java version "1.8.0_72"<br/>
-> Java(TM) SE Runtime Environment (build 1.8.0_72-b15)<br/>
-> Java HotSpot(TM) 64-Bit Server VM (build 25.72-b15, mixed mode)<br/>
+> openjdk version "1.8.0_232" <br/>
+> OpenJDK Runtime Environment Corretto-8.232.09.2 (build 1.8.0_232-b09) <br/>
+> OpenJDK 64-Bit Server VM Corretto-8.232.09.2 (build 25.232-b09, mixed mode)
 
 Usage:
 ---
@@ -63,8 +80,3 @@ Create vs. Update
 - **CREATE:** By default, a create command will be sent for every CSV record in a file.
 - **UPDATE:** To update records, include the word `update` in the name the CSV file.
 - Create and update requests must be in separate files.
-
-Firewall Requirements
----
-You will need to enable outbound traffic to the domain specified by the `base.url` property.  
-Most likely, this means enabling outbound traffic to  `api.onlinephotosubmission.com` port `443` 
