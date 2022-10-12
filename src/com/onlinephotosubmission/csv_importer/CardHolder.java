@@ -16,6 +16,7 @@ class CardHolder {
     private static final int ID_INDEX = 1;
     private static final String SUPPORTING_DOCS_REQD_HEADER = "SupportingDocumentsRequired";
     private static final String EMAIL_GROUP_HEADER = "EmailGroup";
+    private static final String CARDHOLDER_GROUP_HEADER = "CardholderGroup";
     private static final String MANAGER_EMAIL_HEADER = "ManagerEmail";
     private String email;
     private String id;
@@ -71,7 +72,7 @@ class CardHolder {
 
         Arrays.parallelSetAll(header, (i) -> header[ i ].replace("\"", "").trim());
         supportingDocsRequiredIndex = Arrays.asList(header).indexOf(SUPPORTING_DOCS_REQD_HEADER);
-        emailGroupIndex = Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER);
+        emailGroupIndex = (Arrays.asList(header).contains(CARDHOLDER_GROUP_HEADER) ? Arrays.asList(header).indexOf(CARDHOLDER_GROUP_HEADER) : Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER));
         managerEmailIndex = Arrays.asList(header).indexOf(MANAGER_EMAIL_HEADER);
         CardHolder.header = header;
     }
