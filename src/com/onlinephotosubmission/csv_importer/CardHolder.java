@@ -9,7 +9,7 @@ class CardHolder {
 
     private static String[] header;
     private static int supportingDocsRequiredIndex = -1;
-    private static int emailGroupIndex = -1;
+    private static int cardholderGroupIndex = -1;
     private static int managerEmailIndex = -1;
 
     private static final int EMAIL_INDEX = 0;
@@ -21,7 +21,7 @@ class CardHolder {
     private String email;
     private String id;
     private String supportingDocsRequired;
-    private String emailGroupName;
+    private String cardholderGroupName;
     private String managerEmail;
     private String inputString;
     private String delimiter;
@@ -72,7 +72,7 @@ class CardHolder {
 
         Arrays.parallelSetAll(header, (i) -> header[ i ].replace("\"", "").trim());
         supportingDocsRequiredIndex = Arrays.asList(header).indexOf(SUPPORTING_DOCS_REQD_HEADER);
-        emailGroupIndex = (Arrays.asList(header).contains(CARDHOLDER_GROUP_HEADER) ? Arrays.asList(header).indexOf(CARDHOLDER_GROUP_HEADER) : Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER));
+        cardholderGroupIndex = (Arrays.asList(header).contains(CARDHOLDER_GROUP_HEADER) ? Arrays.asList(header).indexOf(CARDHOLDER_GROUP_HEADER) : Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER));
         managerEmailIndex = Arrays.asList(header).indexOf(MANAGER_EMAIL_HEADER);
         CardHolder.header = header;
     }
@@ -92,7 +92,7 @@ class CardHolder {
         email = fieldValues[ EMAIL_INDEX ];
         id = fieldValues[ ID_INDEX ];
         if (supportingDocsRequiredIndex >= 0) supportingDocsRequired = fieldValues[ supportingDocsRequiredIndex ];
-        if (emailGroupIndex >= 0) emailGroupName = fieldValues[ emailGroupIndex ];
+        if (cardholderGroupIndex >= 0) cardholderGroupName = fieldValues[cardholderGroupIndex];
         if (managerEmailIndex >= 0) managerEmail = fieldValues[ managerEmailIndex ];
     }
 
@@ -107,18 +107,18 @@ class CardHolder {
         json.append(forUpdate || !hasCustomFields() ? "" : "\"customFields\":");
         if (hasCustomFields())
             json.append(getCustomFieldsAsJSON(forUpdate) + ", ");
-        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getEmailGroupJSON() + getManagerEmailJSON() + " }");
+        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getCardholderGroupJSON() + getManagerEmailJSON() + " }");
         return json.toString();
     }
 
     private boolean hasCustomFields() {
 
-        return hasEmailGroup() ? header.length > 3 : header.length > 2;
+        return hasCardholderGroup() ? header.length > 3 : header.length > 2;
     }
 
-    private boolean hasEmailGroup() {
+    private boolean hasCardholderGroup() {
 
-        return emailGroupIndex > 0;
+        return cardholderGroupIndex > 0;
     }
 
     private String getSupportingDocsRequiredJSON() {
@@ -127,10 +127,10 @@ class CardHolder {
         else return ", \"additionalPhotoRequired\":" + supportingDocsRequired;
     }
 
-    private String getEmailGroupJSON() {
+    private String getCardholderGroupJSON() {
 
-        if (emailGroupIndex < 0) return "";
-        else return ", \"emailGroupName\":\"" + emailGroupName + "\"";
+        if (cardholderGroupIndex < 0) return "";
+        else return ", \"cardHolderGroupName\":\"" + cardholderGroupName + "\"";
     }
 
     private String getManagerEmailJSON() {
@@ -143,7 +143,7 @@ class CardHolder {
 
         StringBuilder customFieldsAsJSON = new StringBuilder(forUpdate ? "" : "{");
         for (int i = 2; i < header.length; i++) {
-            if (i == supportingDocsRequiredIndex || i == emailGroupIndex) continue;
+            if (i == supportingDocsRequiredIndex || i == cardholderGroupIndex) continue;
             customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\",");
         }
         customFieldsAsJSON.deleteCharAt(customFieldsAsJSON.length() - 1);
