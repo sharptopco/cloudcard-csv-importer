@@ -112,13 +112,29 @@ class CardHolder {
     }
 
     private boolean hasCustomFields() {
+        //there should always be at least 2 columns in the csv, email and identifier
+        int customFieldColumns = header.length - 2;
 
-        return hasCardholderGroup() ? header.length > 3 : header.length > 2;
+        if (hasCardholderGroup()) customFieldColumns--;
+        if (hasManagerEmail()) customFieldColumns--;
+        if (hasSupportingDocsRequired()) customFieldColumns--;
+
+        return customFieldColumns > 0;
     }
 
     private boolean hasCardholderGroup() {
 
         return cardholderGroupIndex > 0;
+    }
+
+    private boolean hasManagerEmail() {
+
+        return managerEmailIndex > 0;
+    }
+
+    private boolean hasSupportingDocsRequired() {
+
+        return supportingDocsRequiredIndex > 0;
     }
 
     private String getSupportingDocsRequiredJSON() {
@@ -143,7 +159,7 @@ class CardHolder {
 
         StringBuilder customFieldsAsJSON = new StringBuilder(forUpdate ? "" : "{");
         for (int i = 2; i < header.length; i++) {
-            if (i == supportingDocsRequiredIndex || i == cardholderGroupIndex) continue;
+            if (i == supportingDocsRequiredIndex || i == cardholderGroupIndex || i == managerEmailIndex) continue;
             customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\",");
         }
         customFieldsAsJSON.deleteCharAt(customFieldsAsJSON.length() - 1);
