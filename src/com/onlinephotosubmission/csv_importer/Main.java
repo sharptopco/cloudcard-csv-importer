@@ -8,9 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -19,14 +17,15 @@ public class Main {
     public static final String INPUT_DIR = "input.directory";
     public static final String REPORT_DIR = "report.directory";
     public static final String COMPLETED_DIR = "completed.directory";
-    public static final String ACCESS_TOKEN = "access.token";
+    public static final String PERSISTENT_ACCESS_TOKEN = "access.token";
     public static final String BASE_URL = "base.url";
     public static final String CHARACTER_SET = "character.set";
     public static final String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
     public static void main(String[] args) throws Exception {
-
+        TokenService tokenService = new TokenService();
         Properties properties = new Properties();
+
         try {
             if (args.length > 0) {
                 properties.load(new FileInputStream(args[ 0 ]));
@@ -39,23 +38,24 @@ public class Main {
         }
         System.out.println("Properties Loaded --> " + properties);
 
+        tokenService.login(properties.getProperty(PERSISTENT_ACCESS_TOKEN), properties.getProperty(BASE_URL));
         for (File inputFile : loadInputFiles(properties)) {
             List<String> lines = convertTextFileToListOfLines(inputFile, properties);
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
-            saveCardHolders(cardHolders, inputFile, properties);
+            saveCardHolders(cardHolders, inputFile, properties, tokenService.getAuthToken());
             moveFileToCompleted(inputFile, properties);
         }
+        tokenService.logout(properties.getProperty(BASE_URL));
     }
 
-    private static String importToCloudCard(CardHolder cardHolder, Properties properties) {
+    private static String importToCloudCard(CardHolder cardHolder, Properties properties, String authToken) {
 
         try {
-
             URL url = new URL(properties.getProperty(BASE_URL) + "/api/people");
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
-            setConnectionHeaders(connection, properties);
+            setConnectionHeaders(connection, authToken);
 
             OutputStream outputStream = connection.getOutputStream();
             String json = cardHolder.toJSON();
@@ -75,7 +75,7 @@ public class Main {
         return "Success";
     }
 
-    private static String updateInCloudCard(CardHolder cardHolder, Properties properties) {
+    private static String updateInCloudCard(CardHolder cardHolder, Properties properties, String authToken) {
 
         try {
 
@@ -83,7 +83,7 @@ public class Main {
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setRequestMethod("PUT");
-            setConnectionHeaders(connection, properties);
+            setConnectionHeaders(connection, authToken);
 
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(cardHolder.toJSON(true).getBytes());
@@ -115,10 +115,10 @@ public class Main {
         }
     }
 
-    private static void setConnectionHeaders(HttpsURLConnection connection, Properties properties) {
+    private static void setConnectionHeaders(HttpsURLConnection connection, String authToken) {
 
         connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("X-Auth-Token", properties.getProperty(ACCESS_TOKEN));
+        connection.setRequestProperty("X-Auth-Token", authToken);
         connection.setRequestProperty("Accept", "application/json");
     }
 
@@ -164,7 +164,7 @@ public class Main {
         }
     }
 
-    private static void saveCardHolders(List<CardHolder> cardHolders, File inputFile, Properties properties) {
+    private static void saveCardHolders(List<CardHolder> cardHolders, File inputFile, Properties properties, String authToken) {
 
         boolean updateCardholders = inputFile.getName().toLowerCase().contains("update");
 
@@ -177,9 +177,9 @@ public class Main {
                 result = "failed validation";
             } else {
                 if (updateCardholders) {
-                    result = "UPDATE " + updateInCloudCard(cardHolder, properties);
+                    result = "UPDATE " + updateInCloudCard(cardHolder, properties, authToken);
                 } else {
-                    result = "CREATE " + importToCloudCard(cardHolder, properties);
+                    result = "CREATE " + importToCloudCard(cardHolder, properties, authToken);
                 }
             }
             content = content + result + ", " + cardHolder + "\n";
