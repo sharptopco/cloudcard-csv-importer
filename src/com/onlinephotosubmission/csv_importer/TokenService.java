@@ -35,7 +35,7 @@ public class TokenService {
             String response = new BufferedReader(new InputStreamReader((connection.getInputStream()))).readLine();
             authToken = response.split("tokenValue\":\"")[1].split("\"")[0];
 
-            System.out.println("Logged in with: " + authToken);
+            System.out.println("Log in successful - authToken: " + "..." + authToken.substring(3, 8) + "...");
 
             connection.disconnect();
 
@@ -46,7 +46,7 @@ public class TokenService {
     }
 
     public void logout(String baseUrl) {
-        System.out.println("logging out " + authToken);
+        System.out.println("Logging out authToken: " + "..." + authToken.substring(3, 8) + "...");
 
         String requestBody = "{\"authenticationToken\":\"" + authToken + "\"}";
 
