@@ -9,7 +9,7 @@ automates importing new cardholders in CloudCard.
 Tutorial Videos
 ---
 
-1. [YouTube: How to Create a Service Account](https://www.youtube.com/watch?v=ZfrjFwrkwZQ)
+1. [YouTube: How to Create a Service Account](https://youtu.be/_J9WKAMZOdY)
 1. [YouTube: CloudCard CSV Importer Tutorial](https://youtu.be/Pu6HXLk6jZ4)
 
 Requirements:
