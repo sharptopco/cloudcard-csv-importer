@@ -42,7 +42,7 @@ To test your system, run `java -version`.  The output should look like the follo
 Usage:
 ---
 
-1. Create a separate service account for CloudCard Photo Downloader to use. ([Instructions](https://www.youtube.com/watch?v=ZfrjFwrkwZQ))
+1. Create a separate service account for CloudCard Photo Downloader to use. ([Instructions](https://youtu.be/_J9WKAMZOdY))
 1. Download [cloudcard-csv-importer.jar](https://github.com/sharptopco/cloudcard-csv-importer/raw/master/cloudcard-csv-importer.jar).
 1. In a terminal window, run the command `java -jar cloudcard-csv-importer.jar {path_to_properties_file}` in the same directory as the JAR file
 
@@ -71,6 +71,7 @@ CSV Requirements
 - The second field must be the person's ID number.
 - The email group, if specified, must be called `EmailGroup` in the header row.
 - The manager's email, if specified, must be called `ManagerEmail` in the header row.
+- The manager's identifier, if specified, must be called `ManagerIdentifier` in the header row.
 - The Supporting Documents Required field, if specified, must be called `SupportingDocumentsRequired` in the header row.
 - Custom field values, if specified, the name in the header row must match the name of the custom field exactly.
 
