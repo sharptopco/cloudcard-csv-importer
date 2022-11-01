@@ -28,8 +28,8 @@ public class TokenService {
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK && connection.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
                 System.out.println(getResponseBody(connection, connection.getResponseCode()));
-                System.out.println("Logging in to CloudCard API failed - HTTP error code: " + connection.getResponseCode());
-                return;
+                System.out.println("Logging in to CloudCard API failed - HTTP error code: " + connection.getResponseCode() + ". Exiting application...");
+                System.exit(1);
             }
 
             String response = new BufferedReader(new InputStreamReader((connection.getInputStream()))).readLine();
