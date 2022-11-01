@@ -11,6 +11,7 @@ class CardHolder {
     private static int supportingDocsRequiredIndex = -1;
     private static int cardholderGroupIndex = -1;
     private static int managerEmailIndex = -1;
+    private static int managerIdentifierIndex = -1;
 
     private static final int EMAIL_INDEX = 0;
     private static final int ID_INDEX = 1;
@@ -18,11 +19,13 @@ class CardHolder {
     private static final String EMAIL_GROUP_HEADER = "EmailGroup";
     private static final String CARDHOLDER_GROUP_HEADER = "CardholderGroup";
     private static final String MANAGER_EMAIL_HEADER = "ManagerEmail";
+    private static final String MANAGER_IDENTIFIER_HEADER = "ManagerIdentifier";
     private String email;
     private String id;
     private String supportingDocsRequired;
     private String cardholderGroupName;
     private String managerEmail;
+    private String managerIdentifier;
     private String inputString;
     private String delimiter;
     String[] fieldValues;
@@ -74,6 +77,7 @@ class CardHolder {
         supportingDocsRequiredIndex = Arrays.asList(header).indexOf(SUPPORTING_DOCS_REQD_HEADER);
         cardholderGroupIndex = (Arrays.asList(header).contains(CARDHOLDER_GROUP_HEADER) ? Arrays.asList(header).indexOf(CARDHOLDER_GROUP_HEADER) : Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER));
         managerEmailIndex = Arrays.asList(header).indexOf(MANAGER_EMAIL_HEADER);
+        managerIdentifierIndex = Arrays.asList(header).indexOf(MANAGER_IDENTIFIER_HEADER);
         CardHolder.header = header;
     }
 
@@ -94,6 +98,7 @@ class CardHolder {
         if (supportingDocsRequiredIndex >= 0) supportingDocsRequired = fieldValues[ supportingDocsRequiredIndex ];
         if (cardholderGroupIndex >= 0) cardholderGroupName = fieldValues[cardholderGroupIndex];
         if (managerEmailIndex >= 0) managerEmail = fieldValues[ managerEmailIndex ];
+        if (managerIdentifierIndex >= 0) managerIdentifier = fieldValues[ managerIdentifierIndex ];
     }
 
     public String toJSON() {
@@ -107,7 +112,7 @@ class CardHolder {
         json.append(forUpdate || !hasCustomFields() ? "" : "\"customFields\":");
         if (hasCustomFields())
             json.append(getCustomFieldsAsJSON(forUpdate) + ", ");
-        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getCardholderGroupJSON() + getManagerEmailJSON() + " }");
+        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getCardholderGroupJSON() + getManagerEmailJSON() + getManagerIdentifierJSON() + " }");
         return json.toString();
     }
 
@@ -118,6 +123,7 @@ class CardHolder {
         if (hasCardholderGroup()) customFieldColumns--;
         if (hasManagerEmail()) customFieldColumns--;
         if (hasSupportingDocsRequired()) customFieldColumns--;
+        if (hasManagerIdentifier()) customFieldColumns--;
 
         return customFieldColumns > 0;
     }
@@ -130,6 +136,11 @@ class CardHolder {
     private boolean hasManagerEmail() {
 
         return managerEmailIndex > 0;
+    }
+
+    private boolean hasManagerIdentifier() {
+
+        return managerIdentifierIndex > 0;
     }
 
     private boolean hasSupportingDocsRequired() {
@@ -155,11 +166,17 @@ class CardHolder {
         else return ", \"managerEmail\":\"" + managerEmail + "\"";
     }
 
+    private String getManagerIdentifierJSON() {
+
+        if (managerIdentifierIndex < 0) return "";
+        else return ", \"managerIdentifier\":\"" + managerIdentifier + "\"";
+    }
+
     private String getCustomFieldsAsJSON(boolean forUpdate) {
 
         StringBuilder customFieldsAsJSON = new StringBuilder(forUpdate ? "" : "{");
         for (int i = 2; i < header.length; i++) {
-            if (i == supportingDocsRequiredIndex || i == cardholderGroupIndex || i == managerEmailIndex) continue;
+            if (i == supportingDocsRequiredIndex || i == cardholderGroupIndex || i == managerEmailIndex || i == managerIdentifierIndex) continue;
             customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\",");
         }
         customFieldsAsJSON.deleteCharAt(customFieldsAsJSON.length() - 1);
