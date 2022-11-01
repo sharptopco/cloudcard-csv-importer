@@ -58,8 +58,7 @@ Create a properties file similar to `src/config-template.properties`
 * `base.url`: the URL for the online photo submission API. 
   *  Production: `https://api.onlinephotosubmission.com`
   *  Test: `https://test-api.onlinephotosubmission.com`
-* `access.token`: the API key that authenticates the importer with [online photo submission](https://onlinephotosubmission.com). You can
-  use `get-token.sh` on Mac/Linux or `get-token.ps1` on Windows to get your access token.
+* `access.token`: the API key that authenticates the importer with CloudCard ([Video](https://www.youtube.com/watch?v=_J9WKAMZOdY)).
 * `character.set`: the character set encoding for input files, i.e. `utf8`, `utf16`. Default: `utf8`
 
 CSV Requirements
