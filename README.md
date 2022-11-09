@@ -68,7 +68,7 @@ CSV Requirements
 - The number of fields in each row should always match the number of fields in the header row.
 - The first field must be the person's Email.
 - The second field must be the person's ID number.
-- The email group, if specified, must be called `EmailGroup` in the header row.
+- The email group, if specified, must be called `CardholderGroup` in the header row.
 - The manager's email, if specified, must be called `ManagerEmail` in the header row.
 - The manager's identifier, if specified, must be called `ManagerIdentifier` in the header row.
 - The Supporting Documents Required field, if specified, must be called `SupportingDocumentsRequired` in the header row.
