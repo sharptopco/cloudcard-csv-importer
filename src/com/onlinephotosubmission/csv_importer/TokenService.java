@@ -10,11 +10,9 @@ public class TokenService {
 
     private String authToken;
 
-    public void login(String persistentAccessToken, String baseUrl) {
+    public void login(String persistentAccessToken, String baseUrl) throws IOException {
 
         String requestBody = "{\"persistentAccessToken\":\"" + persistentAccessToken + "\"}";
-
-        try {
 
             URL url = new URL(baseUrl + "/api/authenticationTokens");
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -38,11 +36,6 @@ public class TokenService {
             System.out.println("Log in successful - authToken: " + "..." + authToken.substring(3, 8) + "...");
 
             connection.disconnect();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public void logout(String baseUrl) {
