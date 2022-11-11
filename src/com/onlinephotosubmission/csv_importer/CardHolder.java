@@ -157,7 +157,7 @@ class CardHolder {
     private String getCardholderGroupJSON() {
 
         if (cardholderGroupIndex < 0) return "";
-        else return ", \"cardHolderGroupName\":\"" + cardholderGroupName + "\"";
+        else return ", \"cardholderGroupName\":\"" + cardholderGroupName + "\"";
     }
 
     private String getManagerEmailJSON() {
