@@ -44,6 +44,7 @@ Usage:
 
 1. Create a separate service account for CloudCard Photo Downloader to use. ([Instructions](https://youtu.be/_J9WKAMZOdY))
 1. Download [cloudcard-csv-importer.jar](https://github.com/sharptopco/cloudcard-csv-importer/raw/master/cloudcard-csv-importer.jar).
+    - **Note**: Transact Online Photo Submission customers should download [this version](https://github.com/sharptopco/cloudcard-csv-importer/raw/master/transact/cloudcard-csv-importer.jar).
 1. In a terminal window, run the command `java -jar cloudcard-csv-importer.jar {path_to_properties_file}` in the same directory as the JAR file
 
 If not argument is specified `cloudcard-csv-importer` will look for a file called `config.properties` in the current directory.
