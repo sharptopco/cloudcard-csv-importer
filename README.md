@@ -59,6 +59,7 @@ Create a properties file similar to `src/config-template.properties`
 * `base.url`: the URL for the online photo submission API. 
   *  Production: `https://api.onlinephotosubmission.com`
   *  Test: `https://test-api.onlinephotosubmission.com`
+  *  Transact: `https://onlinephoto-api.transactcampus.net`
 * `access.token`: the API key that authenticates the importer with CloudCard ([Video](https://www.youtube.com/watch?v=_J9WKAMZOdY)).
 * `character.set`: the character set encoding for input files, i.e. `utf8`, `utf16`. Default: `utf8`
 
