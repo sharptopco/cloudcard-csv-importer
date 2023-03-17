@@ -12,20 +12,24 @@ class CardHolder {
     private static int cardholderGroupIndex = -1;
     private static int managerEmailIndex = -1;
     private static int managerIdentifierIndex = -1;
+    private static int managerCardholderGroupNameIndex = -1;
 
     private static final int EMAIL_INDEX = 0;
     private static final int ID_INDEX = 1;
     private static final String SUPPORTING_DOCS_REQD_HEADER = "SupportingDocumentsRequired";
     private static final String EMAIL_GROUP_HEADER = "EmailGroup";
     private static final String CARDHOLDER_GROUP_HEADER = "CardholderGroup";
+    private static final String CARDHOLDER_GROUP_NAME_HEADER = "CardholderGroupName";
     private static final String MANAGER_EMAIL_HEADER = "ManagerEmail";
     private static final String MANAGER_IDENTIFIER_HEADER = "ManagerIdentifier";
+    private static final String MANAGER_CARDHOLDER_GROUP_NAME_HEADER = "ManagerCardholderGroupName";
     private String email;
     private String id;
     private String supportingDocsRequired;
     private String cardholderGroupName;
     private String managerEmail;
     private String managerIdentifier;
+    private String managerCardholderGroupName;
     private String inputString;
     private String delimiter;
     String[] fieldValues;
@@ -75,9 +79,10 @@ class CardHolder {
 
         Arrays.parallelSetAll(header, (i) -> header[ i ].replace("\"", "").trim());
         supportingDocsRequiredIndex = Arrays.asList(header).indexOf(SUPPORTING_DOCS_REQD_HEADER);
-        cardholderGroupIndex = (Arrays.asList(header).contains(CARDHOLDER_GROUP_HEADER) ? Arrays.asList(header).indexOf(CARDHOLDER_GROUP_HEADER) : Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER));
+        cardholderGroupIndex = getCardholderGroupIndex(header);
         managerEmailIndex = Arrays.asList(header).indexOf(MANAGER_EMAIL_HEADER);
         managerIdentifierIndex = Arrays.asList(header).indexOf(MANAGER_IDENTIFIER_HEADER);
+        managerCardholderGroupNameIndex = Arrays.asList(header).indexOf(MANAGER_CARDHOLDER_GROUP_NAME_HEADER);
         CardHolder.header = header;
     }
 
@@ -99,6 +104,7 @@ class CardHolder {
         if (cardholderGroupIndex >= 0) cardholderGroupName = fieldValues[cardholderGroupIndex];
         if (managerEmailIndex >= 0) managerEmail = fieldValues[ managerEmailIndex ];
         if (managerIdentifierIndex >= 0) managerIdentifier = fieldValues[ managerIdentifierIndex ];
+        if (managerCardholderGroupNameIndex >= 0) managerCardholderGroupName = fieldValues[ managerCardholderGroupNameIndex ];
     }
 
     public String toJSON() {
@@ -124,6 +130,7 @@ class CardHolder {
         if (hasManagerEmail()) customFieldColumns--;
         if (hasSupportingDocsRequired()) customFieldColumns--;
         if (hasManagerIdentifier()) customFieldColumns--;
+        if (hasManagerCardholderGroupName()) customFieldColumns--;
 
         return customFieldColumns > 0;
     }
@@ -141,6 +148,11 @@ class CardHolder {
     private boolean hasManagerIdentifier() {
 
         return managerIdentifierIndex > 0;
+    }
+
+    private boolean hasManagerCardholderGroupName() {
+
+        return managerCardholderGroupNameIndex > 0;
     }
 
     private boolean hasSupportingDocsRequired() {
@@ -182,6 +194,16 @@ class CardHolder {
         customFieldsAsJSON.deleteCharAt(customFieldsAsJSON.length() - 1);
         customFieldsAsJSON.append(forUpdate ? "" : "}");
         return customFieldsAsJSON.toString();
+    }
+
+    private static int getCardholderGroupIndex(String[] header) {
+        if (Arrays.asList(header).contains(CARDHOLDER_GROUP_NAME_HEADER)) {
+            return Arrays.asList(header).indexOf(CARDHOLDER_GROUP_NAME_HEADER);
+        } else if (Arrays.asList(header).contains(CARDHOLDER_GROUP_HEADER)) {
+            return Arrays.asList(header).indexOf(CARDHOLDER_GROUP_HEADER);
+        } else if (Arrays.asList(header).contains(EMAIL_GROUP_HEADER)) {
+            return Arrays.asList(header).indexOf(EMAIL_GROUP_HEADER);
+        } else return -1;
     }
 
     @Override
