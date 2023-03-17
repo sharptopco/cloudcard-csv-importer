@@ -118,7 +118,7 @@ class CardHolder {
         json.append(forUpdate || !hasCustomFields() ? "" : "\"customFields\":");
         if (hasCustomFields())
             json.append(getCustomFieldsAsJSON(forUpdate) + ", ");
-        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getCardholderGroupJSON() + getManagerEmailJSON() + getManagerIdentifierJSON() + " }");
+        json.append("\"identifier\":\"" + id + "\"" + getSupportingDocsRequiredJSON() + getCardholderGroupJSON() + getManagerEmailJSON() + getManagerIdentifierJSON() + getManagerCardholderGroupNameJSON() + " }");
         return json.toString();
     }
 
@@ -184,11 +184,17 @@ class CardHolder {
         else return ", \"managerIdentifier\":\"" + managerIdentifier + "\"";
     }
 
+    private String getManagerCardholderGroupNameJSON() {
+
+        if (managerCardholderGroupNameIndex < 0) return "";
+        else return ", \"managerCardholderGroupName\":\"" + managerCardholderGroupName + "\"";
+    }
+
     private String getCustomFieldsAsJSON(boolean forUpdate) {
 
         StringBuilder customFieldsAsJSON = new StringBuilder(forUpdate ? "" : "{");
         for (int i = 2; i < header.length; i++) {
-            if (i == supportingDocsRequiredIndex || i == cardholderGroupIndex || i == managerEmailIndex || i == managerIdentifierIndex) continue;
+            if (i == supportingDocsRequiredIndex || i == cardholderGroupIndex || i == managerEmailIndex || i == managerIdentifierIndex || i == managerCardholderGroupNameIndex) continue;
             customFieldsAsJSON.append("\"" + header[ i ] + "\":\"" + fieldValues[ i ].replaceAll("\"", "") + "\",");
         }
         customFieldsAsJSON.deleteCharAt(customFieldsAsJSON.length() - 1);
