@@ -6,4 +6,5 @@ config.properties
 .gradle
 build
 *.jar
+!cloudcard-csv-importer.jar
 completed
