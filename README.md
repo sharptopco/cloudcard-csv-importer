@@ -73,6 +73,7 @@ CSV Requirements
 - The email group, if specified, must be called `CardholderGroup` in the header row.
 - The manager's email, if specified, must be called `ManagerEmail` in the header row.
 - The manager's identifier, if specified, must be called `ManagerIdentifier` in the header row.
+- The manager's cardholder group, if specified, must be called `ManagerCardholderGroupName` in the header row.
 - The Supporting Documents Required field, if specified, must be called `SupportingDocumentsRequired` in the header row.
 - Custom field values, if specified, the name in the header row must match the name of the custom field exactly.
 
