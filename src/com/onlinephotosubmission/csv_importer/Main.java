@@ -20,6 +20,7 @@ public class Main {
     public static final String PERSISTENT_ACCESS_TOKEN = "access.token";
     public static final String BASE_URL = "base.url";
     public static final String CHARACTER_SET = "character.set";
+    public static final String SEND_EMAIL_IF_EXISTS = "sendEmailIfExists";
     public static final String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
     public static void main(String[] args) throws Exception {
@@ -63,7 +64,9 @@ public class Main {
             outputStream.write(json.getBytes());
             outputStream.flush();
 
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST && !properties.getProperty(SEND_EMAIL_IF_EXISTS).equals("false")) {
+                return WelcomeEmailService.sendWelcomeEmail(cardHolder, properties.getProperty(BASE_URL), authToken);
+            } else if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
                 return "Failed : HTTP error code : " + connection.getResponseCode();
             }
 
