@@ -37,6 +37,11 @@ public class Main {
             System.err.println("*** ERROR: Filed to load properties file. Caused by: " + e.getMessage() + " ***");
             return;
         }
+
+        if (properties.get(SEND_EMAIL_IF_EXISTS) == null) {
+            properties.setProperty(SEND_EMAIL_IF_EXISTS, "true");
+        }
+
         System.out.println("Properties Loaded --> " + properties);
 
         tokenService.login(properties.getProperty(PERSISTENT_ACCESS_TOKEN), properties.getProperty(BASE_URL));
@@ -64,7 +69,7 @@ public class Main {
             outputStream.write(json.getBytes());
             outputStream.flush();
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST && !properties.getProperty(SEND_EMAIL_IF_EXISTS).equals("false")) {
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST && properties.getProperty(SEND_EMAIL_IF_EXISTS).equals("true")) {
                 return WelcomeEmailService.sendWelcomeEmail(cardHolder, properties.getProperty(BASE_URL), authToken);
             } else if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
                 return "Failed : HTTP error code : " + connection.getResponseCode();
