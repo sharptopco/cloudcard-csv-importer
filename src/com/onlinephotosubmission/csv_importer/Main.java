@@ -21,6 +21,7 @@ public class Main {
     public static final String BASE_URL = "base.url";
     public static final String CHARACTER_SET = "character.set";
     public static final String SEND_EMAIL_IF_EXISTS = "sendEmailIfExists";
+    public static final String UPDATE_IF_USER_EXISTS = "updateIfUserExists";
     public static final String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
     public static void main(String[] args) throws Exception {
@@ -40,6 +41,10 @@ public class Main {
 
         if (properties.get(SEND_EMAIL_IF_EXISTS) == null) {
             properties.setProperty(SEND_EMAIL_IF_EXISTS, "true");
+        }
+
+        if (properties.get(UPDATE_IF_USER_EXISTS) == null) {
+            properties.setProperty(UPDATE_IF_USER_EXISTS, "true");
         }
 
         System.out.println("Properties Loaded --> " + properties);
@@ -69,8 +74,21 @@ public class Main {
             outputStream.write(json.getBytes());
             outputStream.flush();
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST && properties.getProperty(SEND_EMAIL_IF_EXISTS).equals("true")) {
-                return WelcomeEmailService.sendWelcomeEmail(cardHolder, properties.getProperty(BASE_URL), authToken);
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                String result = "Failed : HTTP error code : " + connection.getResponseCode();
+
+                if (properties.getProperty(UPDATE_IF_USER_EXISTS).equals("true")) {
+                    result = updateInCloudCard(cardHolder,properties,authToken);
+
+                    if (!result.equals("Success")) return result;
+                }
+
+                if (properties.getProperty(SEND_EMAIL_IF_EXISTS).equals("true")) {
+                    result = WelcomeEmailService.sendWelcomeEmail(cardHolder, properties.getProperty(BASE_URL), authToken);
+                }
+
+                return result;
+
             } else if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
                 return "Failed : HTTP error code : " + connection.getResponseCode();
             }
