@@ -32,6 +32,7 @@ Requirements:
 - [Service account with office level access](https://sharptop.atlassian.net/wiki/spaces/CCD/pages/1226440705/User+Roles) to CloudCard Online Photo Submission
 - Outbound network access to the following servers/ports if your organization requires all outbound traffic to be whitelisted
   - api.onlinephotosubmission.com:443
+  - api.cloudcard.ca:443 (only necessary if using CloudCard's Canada specific instance)
   - test-api.onlinephotosubmission.com:443 (only necessary if using CloudCard's test instance)
 
 To test your system, run `java -version`.  The output should look like the following.  The exact version isn't important as long as it starts with `1.8`.
@@ -58,6 +59,7 @@ Create a properties file similar to `src/config-template.properties`
 * `report.directory`: a line by line report will be generated in this directory for each input file.
 * `base.url`: the URL for the online photo submission API. 
   *  Production: `https://api.onlinephotosubmission.com`
+  *  Canada: `https://api.cloudcard.ca`
   *  Test: `https://test-api.onlinephotosubmission.com`
   *  Transact: `https://onlinephoto-api.transactcampus.net`
 * `access.token`: the API key that authenticates the importer with CloudCard ([Video](https://www.youtube.com/watch?v=_J9WKAMZOdY)).
