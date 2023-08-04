@@ -1,5 +1,8 @@
 # CloudCard CSV Importer
 
+## :warning: DEPRECATION NOTICE
+This project is no longer supported. Please use [the bulk-action-importer project](https://github.com/online-photo-submission/bulk-action-importer) instead.
+
 Summary:
 ---
 Imports cardholders from a CSV file into [CloudCard Online Photo Submission](https://onlinephotosubmission.com). This project is designed to be run as
