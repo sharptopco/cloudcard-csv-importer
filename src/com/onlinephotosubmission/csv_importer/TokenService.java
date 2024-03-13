@@ -3,6 +3,7 @@ package com.onlinephotosubmission.csv_importer;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.stream.Collectors;
 
@@ -10,12 +11,12 @@ public class TokenService {
 
     private String authToken;
 
-    public void login(String persistentAccessToken, String baseUrl) throws IOException {
+    public void login(String persistentAccessToken, String baseUrl, Proxy proxy) throws IOException {
 
         String requestBody = "{\"persistentAccessToken\":\"" + persistentAccessToken + "\"}";
 
             URL url = new URL(baseUrl + "/api/authenticationTokens");
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            HttpsURLConnection connection = proxy == null ? (HttpsURLConnection) url.openConnection() : (HttpsURLConnection) url.openConnection(proxy);
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             setConnectionHeaders(connection, "", false);
@@ -38,7 +39,7 @@ public class TokenService {
             connection.disconnect();
     }
 
-    public void logout(String baseUrl) {
+    public void logout(String baseUrl, Proxy proxy) {
         System.out.println("Logging out authToken: " + "..." + authToken.substring(3, 8) + "...");
 
         String requestBody = "{\"authenticationToken\":\"" + authToken + "\"}";
@@ -46,7 +47,7 @@ public class TokenService {
         try {
 
             URL url = new URL(baseUrl + "/api/people/me/logout");
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            HttpsURLConnection connection = proxy == null ? (HttpsURLConnection) url.openConnection() : (HttpsURLConnection) url.openConnection(proxy);
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             setConnectionHeaders(connection, authToken, true);

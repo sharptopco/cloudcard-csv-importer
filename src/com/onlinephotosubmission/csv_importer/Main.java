@@ -3,12 +3,16 @@ package com.onlinephotosubmission.csv_importer;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -23,6 +27,8 @@ public class Main {
     public static final String SEND_EMAIL_IF_EXISTS = "sendEmailIfExists";
     public static final String UPDATE_IF_USER_EXISTS = "updateIfUserExists";
     public static final String delimiter = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+    public static final String PROXY_HOST = "proxy.host";
+    public static final String PROXY_PORT = "proxy.port";
 
     public static void main(String[] args) throws Exception {
         TokenService tokenService = new TokenService();
@@ -49,21 +55,28 @@ public class Main {
 
         System.out.println("Properties Loaded --> " + properties);
 
-        tokenService.login(properties.getProperty(PERSISTENT_ACCESS_TOKEN), properties.getProperty(BASE_URL));
+        Proxy proxy = null;
+
+        if (properties.getProperty(PROXY_HOST) != null && properties.getProperty(PROXY_PORT) != null) {
+            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(properties.getProperty(PROXY_HOST), Integer.parseInt(properties.getProperty(PROXY_PORT))));
+        }
+
+        tokenService.login(properties.getProperty(PERSISTENT_ACCESS_TOKEN), properties.getProperty(BASE_URL), proxy);
         for (File inputFile : loadInputFiles(properties)) {
             List<String> lines = convertTextFileToListOfLines(inputFile, properties);
             List<CardHolder> cardHolders = convertLinesIntoCardHolders(lines);
-            saveCardHolders(cardHolders, inputFile, properties, tokenService.getAuthToken());
+            saveCardHolders(cardHolders, inputFile, properties, tokenService.getAuthToken(), proxy);
             moveFileToCompleted(inputFile, properties);
         }
-        tokenService.logout(properties.getProperty(BASE_URL));
+        tokenService.logout(properties.getProperty(BASE_URL), proxy);
     }
 
-    private static String importToCloudCard(CardHolder cardHolder, Properties properties, String authToken) {
+    private static String importToCloudCard(CardHolder cardHolder, Properties properties, String authToken, Proxy proxy) {
 
         try {
             URL url = new URL(properties.getProperty(BASE_URL) + "/api/people");
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
+            HttpsURLConnection connection = proxy == null ? (HttpsURLConnection) url.openConnection() : (HttpsURLConnection) url.openConnection(proxy);
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             setConnectionHeaders(connection, authToken);
@@ -78,13 +91,13 @@ public class Main {
                 String result = "Failed : HTTP error code : " + connection.getResponseCode();
 
                 if (properties.getProperty(UPDATE_IF_USER_EXISTS).equals("true")) {
-                    result = updateInCloudCard(cardHolder,properties,authToken);
+                    result = updateInCloudCard(cardHolder,properties,authToken, proxy);
 
                     if (!result.equals("Success")) return result;
                 }
 
                 if (properties.getProperty(SEND_EMAIL_IF_EXISTS).equals("true")) {
-                    result = WelcomeEmailService.sendWelcomeEmail(cardHolder, properties.getProperty(BASE_URL), authToken);
+                    return WelcomeEmailService.sendWelcomeEmail(cardHolder, properties.getProperty(BASE_URL), authToken, proxy);
                 }
 
                 return result;
@@ -101,12 +114,12 @@ public class Main {
         return "Success";
     }
 
-    private static String updateInCloudCard(CardHolder cardHolder, Properties properties, String authToken) {
+    private static String updateInCloudCard(CardHolder cardHolder, Properties properties, String authToken, Proxy proxy) {
 
         try {
 
             URL url = new URL(properties.getProperty(BASE_URL) + "/api/people/" + cardHolder.getId() + "?findBy=identifier&updateRoles=false");
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            HttpsURLConnection connection = proxy == null ? (HttpsURLConnection) url.openConnection() : (HttpsURLConnection) url.openConnection(proxy);
             connection.setDoOutput(true);
             connection.setRequestMethod("PUT");
             setConnectionHeaders(connection, authToken);
@@ -190,7 +203,7 @@ public class Main {
         }
     }
 
-    private static void saveCardHolders(List<CardHolder> cardHolders, File inputFile, Properties properties, String authToken) {
+    private static void saveCardHolders(List<CardHolder> cardHolders, File inputFile, Properties properties, String authToken, Proxy proxy) {
 
         boolean updateCardholders = inputFile.getName().toLowerCase().contains("update");
 
@@ -203,9 +216,9 @@ public class Main {
                 result = "failed validation";
             } else {
                 if (updateCardholders) {
-                    result = "UPDATE " + updateInCloudCard(cardHolder, properties, authToken);
+                    result = "UPDATE " + updateInCloudCard(cardHolder, properties, authToken, proxy);
                 } else {
-                    result = "CREATE " + importToCloudCard(cardHolder, properties, authToken);
+                    result = "CREATE " + importToCloudCard(cardHolder, properties, authToken, proxy);
                 }
             }
             content = content + result + ", " + cardHolder + "\n";

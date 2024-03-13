@@ -3,17 +3,18 @@ package com.onlinephotosubmission.csv_importer;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.stream.Collectors;
 
 public class WelcomeEmailService {
 
-    public static String sendWelcomeEmail(CardHolder cardHolder, String baseUrl, String authToken) throws IOException {
+    public static String sendWelcomeEmail(CardHolder cardHolder, String baseUrl, String authToken, Proxy proxy) throws IOException {
 
         String requestBody = "{\"viewName\":" + "\"welcome\""+ "}";
 
         URL url = new URL(baseUrl + "/person/" + cardHolder.getEmail() + "/email?findBy=email");
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        HttpsURLConnection connection = proxy == null ? (HttpsURLConnection) url.openConnection() : (HttpsURLConnection) url.openConnection(proxy);
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
         setConnectionHeaders(connection,authToken);
