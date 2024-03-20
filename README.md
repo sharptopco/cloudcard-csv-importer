@@ -67,6 +67,8 @@ Create a properties file similar to `src/config-template.properties`
   *  Transact: `https://onlinephoto-api.transactcampus.net`
 * `access.token`: the API key that authenticates the importer with CloudCard ([Video](https://www.youtube.com/watch?v=_J9WKAMZOdY)).
 * `character.set`: the character set encoding for input files, i.e. `utf8`, `utf16`. Default: `utf8`
+* `proxy.host`: the proxy host to use for outbound network requests. Default: `none`
+* `proxy.port`: the proxy port to use for outbound network requests. Default: `none`
 
 CSV Requirements
 ---
